@@ -1,0 +1,9 @@
+button:focus,
+input:focus {
+  outline: none;
+}
+
+.ant-input-group-addon {
+  border: none !important; /* 去除 addon 的邊框 */
+  background: none !important; /* 讓背景透明，與輸入框無分隔 */
+}
