@@ -20,5 +20,14 @@ body,
 .App {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100vh; /* 確保 App 填滿整個視窗高度 */
+}
+
+main {
+  flex-grow: 1; /* 中間內容區域會自動擴展，佔滿可用空間 */
+}
+
+/* Footer 正常情況下會自動排列在底部 */
+.AppFooter {
+  text-align: center;
 }
