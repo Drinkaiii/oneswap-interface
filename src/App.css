@@ -7,3 +7,18 @@ input:focus {
   border: none !important; /* 去除 addon 的邊框 */
   background: none !important; /* 讓背景透明，與輸入框無分隔 */
 }
+
+html,
+body,
+#root,
+.App {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
