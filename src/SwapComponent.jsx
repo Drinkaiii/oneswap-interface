@@ -6,7 +6,8 @@ import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
 import TransactionHistory from './TransactionHistory';
-import { toNormalUnit, toSmallestUnit } from './utils';
+import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toSmallestUnit } from './utils';
+
 
 const { Text } = Typography;
 
@@ -47,13 +48,13 @@ const SwapComponent = () => {
 
   // fetch user and token data
   useEffect(() => {
-    fetchTokenIcons();
+    fetchTokenIcons(setTokenIcons);
   }, []);
 
   // Fetch user's wallet balance from Worker back-end
   useEffect(() => {
     if (account)
-      fetchAccountBalances(); // fetch account info again if account change
+      fetchAccountBalances(account, setBalances); // fetch account info again if account change
     else
       console.log("No wallet connected");
   }, [account]);
@@ -90,24 +91,6 @@ const SwapComponent = () => {
   const handleSlippageChange = (value) => {
     setSlippage(value);
   };
-
-  // Fetch token icons from CoinGecko
-  async function fetchTokenIcons(){
-
-    try {
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum,bitcoin,tether,dai'
-      );
-      const data = await response.json();
-      const icons = {};
-      data.forEach(token => {
-        icons[token.symbol.toUpperCase()] = token.image;
-      });
-      setTokenIcons(icons);
-    } catch (error) {
-      console.error('Error fetching token icons:', error);
-    }
-  };
   
   // send estimate request by WebSocket
   const sendEstimateRequest = () => {
@@ -122,30 +105,6 @@ const SwapComponent = () => {
       headers: { sessionId },
     });
   };
-
-  async function fetchAccountBalances() {
-
-    if (!account) {
-      console.warn('Wallet not connected');
-      return;
-    }
-    try {
-      const response = await fetch(`http://localhost:8080/api/1.0/account/info?address=${account}`);
-      const data = await response.json();
-      
-      const balanceMap = {};
-      data.forEach(token => {
-        const balance = new BigNumber(token.balance, 16);
-        balanceMap[token.tokenAddress.toLowerCase()] = {
-          balance: balance,
-          decimals: token.decimals
-        };
-      });
-      setBalances(balanceMap);
-    } catch (error) {
-      console.error('Error fetching account balances:', error);
-    }
-  }
 
   // handle response from WebSocket
   const handleEstimateResponse = (data) => {

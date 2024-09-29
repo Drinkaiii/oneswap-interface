@@ -14,3 +14,44 @@ export function toSmallestUnit(amount, decimals) {
   const factor = new BigNumber(10).pow(decimals);
   return bigNumberAmount.times(factor);
 }
+
+// Fetch token icons from CoinGecko
+export const fetchTokenIcons = async (setTokenIcons) => {
+  try {
+    const response = await fetch(
+      'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum,bitcoin,tether,dai'
+    );
+    const data = await response.json();
+    const icons = {};
+    data.forEach(token => {
+      icons[token.symbol.toUpperCase()] = token.image;
+    });
+    setTokenIcons(icons);
+  } catch (error) {
+    console.error('Error fetching token icons:', error);
+  }
+};
+
+// Fetch account balance from worker back-end
+export const fetchAccountBalances = async (account, setBalances) => {
+  if (!account) {
+      console.warn('Wallet not connected');
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:8080/api/1.0/account/info?address=${account}`);
+      const data = await response.json();
+      
+      const balanceMap = {};
+      data.forEach(token => {
+        const balance = new BigNumber(token.balance, 16);
+        balanceMap[token.tokenAddress.toLowerCase()] = {
+          balance: balance,
+          decimals: token.decimals
+        };
+      });
+      setBalances(balanceMap);
+    } catch (error) {
+      console.error('Error fetching account balances:', error);
+    }
+};
