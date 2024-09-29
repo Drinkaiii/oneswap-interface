@@ -5,22 +5,22 @@ import CountUp from 'react-countup';
 import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
-import TransactionHistory from './TransactionHistory';
+import LimitOrderHistory  from './LimitOrderHistory';
 import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toSmallestUnit } from './utils';
 
 
 const { Text } = Typography;
 
 const availableTokens = [
-  { symbol: 'ETH', decimals: 18, address: "0xa3127E9B960DA8E7b297411728Def559bCaDf9c4" },
-  { symbol: 'BTC', decimals: 18, address: "0xdE43B354d506Ce213C4bE70B750b5c6AcC09D7CA"},
-  { symbol: 'USDT', decimals: 18, address: "0x9a34950F069fFB4FD58bbE906f0C36A4c51AAf00" },
-  { symbol: 'ZYDB', decimals: 18, address: "0xab0b42Ac6ec6B9B29E55Ba7991887f4C374d2407" }
-];
+    { symbol: 'ETH', code: 'ethereum', decimals: 18, address: "0xa3127E9B960DA8E7b297411728Def559bCaDf9c4" },
+    { symbol: 'WBTC', code: 'wrapped-bitcoin', decimals: 18, address: "0xdE43B354d506Ce213C4bE70B750b5c6AcC09D7CA"},
+    { symbol: 'USDT', code: 'tether', decimals: 18, address: "0x9a34950F069fFB4FD58bbE906f0C36A4c51AAf00" },
+    { symbol: 'ZYDB', code: 'zydb', decimals: 18, address: "0xab0b42Ac6ec6B9B29E55Ba7991887f4C374d2407" }
+  ];
 
 // Contract and ABI
-const contractAddress = "0x635D90a6D17d228423385518Ce597300C4fE0260"; // Aggregator Contract
-const contractABI = [{"inputs":[{"internalType":"address","name":"_uniswapRouter","type":"address"},{"internalType":"address","name":"_balancerVault","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"trader","type":"address"},{"indexed":true,"internalType":"address","name":"tokenIn","type":"address"},{"indexed":true,"internalType":"address","name":"tokenOut","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountOut","type":"uint256"},{"indexed":false,"internalType":"enum DexAggregator.Exchange","name":"exchange","type":"uint8"}],"name":"TradeExecuted","type":"event"},{"inputs":[],"name":"balancerVault","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"address","name":"tokenOut","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"minAmountOut","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"enum DexAggregator.Exchange","name":"exchange","type":"uint8"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"bytes32","name":"poolId","type":"bytes32"}],"name":"swapTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"uniswapRouter","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newFeePercent","type":"uint256"}],"name":"updateFeePercent","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const contractAddress = "0x08dfC836a3343618ffB412FFaDF3B882cB98852b"; // New Order Contract
+const contractABI = [{"inputs":[{"internalType":"address","name":"_dexAggregator","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"}],"name":"OrderCancelled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountOut","type":"uint256"}],"name":"OrderExecuted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"address","name":"tokenIn","type":"address"},{"indexed":false,"internalType":"address","name":"tokenOut","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"minAmountOut","type":"uint256"}],"name":"OrderPlaced","type":"event"},{"inputs":[{"internalType":"uint256","name":"orderId","type":"uint256"}],"name":"cancelOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"dexAggregator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"orderId","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint8","name":"exchange","type":"uint8"},{"internalType":"bytes32","name":"poolId","type":"bytes32"}],"name":"executeOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"nextOrderId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"address","name":"tokenOut","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"minAmountOut","type":"uint256"}],"name":"placeOrder","outputs":[{"internalType":"uint256","name":"orderId","type":"uint256"}],"stateMutability":"nonpayable","type":"function"}];
 
 const LimitOrderComponent = () => {
 
@@ -46,10 +46,11 @@ const LimitOrderComponent = () => {
   const { client, connected, sessionId, estimateResponse } = useWebSocket();
 
   const [latestTransaction, setLatestTransaction] = useState(null);
+  
 
   // fetch user and token data
   useEffect(() => {
-    fetchTokenIcons(setTokenIcons);
+    fetchTokenIcons(availableTokens, setTokenIcons);
   }, []);
 
   // Fetch user's wallet balance from Worker back-end
@@ -144,128 +145,60 @@ const LimitOrderComponent = () => {
     setBuyAmount(targetPrice);
   };
 
-  // swap token function
-  const handleSwap = async () => {
-
-    if (!account){
+  // place order function
+  const handlePlaceOrder = async () => {
+    if (!account) {
       alert("請連接錢包");
       return;
     }
-
-    setIsWaitingForTransaction(true); // Show waiting modal
-
-    try {
   
-      // initialize the contract
+    setIsWaitingForTransaction(true); // Show waiting modal
+  
+    try {
+      // Initialize the contract
       const contract = new web3.eth.Contract(contractABI, contractAddress);
   
-      // prepare the parameters
-      const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
-      const exchanger = estimateResponse.data[0].liquidity.exchanger === "Uniswap" ? 0 : 1;
-      const poolId = estimateResponse.data[0].liquidity.poolId !== null ? estimateResponse.data[0].liquidity.poolId : "0xc1e0942d3babe2ce30a78d0702a8b5ace651505400020000000000000000014d"; //default is WETH/WBTC poolId
-
-      // constract transaction
-      const transactionParameters = {
-        tokenIn: sellToken.address,
-        tokenOut: buyToken.address,
-        amountIn: sellAmount.toFixed(),
-        minAmountOut: minAmountOut.toFixed(),
-        deadline: deadline,
-        exchange: exchanger,
-        path: [sellToken.address, buyToken.address],
-        poolId: poolId
-      };
-      console.log(transactionParameters);
+      // Prepare the transaction parameters
+      const amountIn = sellAmount.toFixed(); // Amount user wants to sell
+      const minAmountOutFormatted = minAmountOut.toFixed(); // Correctly reference the state minAmountOut
   
-      // send the transaction
-      const tx = await contract.methods.swapTokens(
-        transactionParameters.tokenIn,
-        transactionParameters.tokenOut,
-        transactionParameters.amountIn,
-        transactionParameters.minAmountOut,
-        transactionParameters.deadline,
-        transactionParameters.exchange,
-        transactionParameters.path,
-        transactionParameters.poolId
-      ).send({ from: account })
-      .on('transactionHash', (hash) => {
-        // Immediately close the waiting modal after transaction is signed
-        setIsWaitingForTransaction(false);
-      })
-      .on('receipt', (receipt) => {
-        console.log("Transaction Success!", receipt);
-        // Show a success notification
-        notification.success({
-          message: 'Transaction Successful',
-          description: 'Your transaction has been confirmed successfully.',
-          placement: 'topRight'
+      // Call the placeOrder function on the contract
+      const tx = await contract.methods
+        .placeOrder(sellToken.address, buyToken.address, amountIn, minAmountOutFormatted) // Use the correct minAmountOut
+        .send({ from: account })
+        .on('transactionHash', (hash) => {
+          setIsWaitingForTransaction(false); // Close waiting modal
+          console.log("Transaction hash:", hash);
+        })
+        .on('receipt', (receipt) => {
+          console.log("Transaction Success!", receipt);
+          // Show a success notification
+          notification.success({
+            message: 'Order Placed Successfully',
+            description: 'Your order has been placed successfully.',
+            placement: 'topRight'
+          });
+        })
+        .on('error', (error) => {
+          console.error("Transaction Error:", error);
+          setIsWaitingForTransaction(false); // Hide waiting modal on error
+          notification.error({
+            message: 'Order Failed',
+            description: 'There was an error placing your order. Please try again.',
+            placement: 'topRight'
+          });
         });
-      })
-      .on('error', (error) => {
-        console.error("Transaction Error:", error);
-        // Hide the modal in case of an error
-        setIsWaitingForTransaction(false);
-        // Show an error notification
-        notification.error({
-          message: 'Transaction Failed',
-          description: 'There was an error processing your transaction. Please try again.',
-          placement: 'topRight'
-        });
-      });
-  
-      // get tx
-      console.log("Transaction success!", tx);
-      const events = tx.events;
-      console.log(events);
-      const eventAbi = contractABI.find(
-        (item) => item.type === 'event' && item.name === 'TradeExecuted'
-      );
-
-      if (eventAbi) {
-        const eventSignature = web3.eth.abi.encodeEventSignature(eventAbi);
-
-        tx.logs.forEach((log) => {
-          if (log.topics[0] === eventSignature) {
-            const decodedEvent = web3.eth.abi.decodeLog(
-              eventAbi.inputs,
-              log.data,
-              log.topics.slice(1)
-            );
-            const newTransaction = {
-              transactionHash: tx.transactionHash,
-              tokenIn: {
-                symbol: sellToken.symbol,
-                address: decodedEvent.tokenIn,
-                decimals: sellToken.decimals,
-              },
-              tokenOut: {
-                symbol: buyToken.symbol,
-                address: decodedEvent.tokenOut,
-                decimals: buyToken.decimals,
-              },
-              amountIn: decodedEvent.amountIn.toString(),
-              amountOut: decodedEvent.amountOut.toString(),
-              exchanger: decodedEvent.exchange,
-              createdAt: new Date().toISOString(),
-            };
-            setLatestTransaction(newTransaction);
-          }
-        });
-      } else {
-        console.error("TradeExecuted event ABI not found");
-        setIsWaitingForTransaction(false); // Hide waiting modal when done
-      }
     } catch (error) {
-      console.error("Error while swapping tokens:", error);
+      console.error("Error while placing order:", error);
       setIsWaitingForTransaction(false); // Hide waiting modal on error
-      // Show an error notification
       notification.error({
-        message: 'Transaction Failed',
-        description: 'There was an error processing your transaction. Please try again.',
+        message: 'Order Failed',
+        description: 'There was an error placing your order. Please try again.',
         placement: 'topRight'
       });
     }
   };
+  
 
   // get user balance
   function getBalanceForToken(tokenAddress){
@@ -404,7 +337,7 @@ const LimitOrderComponent = () => {
                 <Button type="default" style={{margin:' 0 10px 30px 0', fontWeight: 600}} onClick={() => handleTargetPriceSelection(30)}>+30%</Button>
             </div>
 
-        <Button type="primary" block onClick={handleSwap} icon={<SwapOutlined />}>
+        <Button type="primary" block onClick={handlePlaceOrder} icon={<SwapOutlined />}>
           Place Order
         </Button>
         <Modal
@@ -425,8 +358,11 @@ const LimitOrderComponent = () => {
           />
         </Modal>
       </div>
-      <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', margin: '50px 0',width: '100%', backgroundColor: '#f0f2f5' }}>
-        <TransactionHistory account={account} latestTransaction={latestTransaction} />
+      <div>
+        {/* Order History Component */}
+        <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', margin: '50px 0',width: '100%', backgroundColor: '#f0f2f5' }}>
+            {account && <LimitOrderHistory accountAddress={account} tokenIcons={tokenIcons} />}
+        </div>
       </div>
       {/* Waiting Modal */}
       <Modal

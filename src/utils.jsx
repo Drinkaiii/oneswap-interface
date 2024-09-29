@@ -16,21 +16,32 @@ export function toSmallestUnit(amount, decimals) {
 }
 
 // Fetch token icons from CoinGecko
-export const fetchTokenIcons = async (setTokenIcons) => {
+export const fetchTokenIcons = async (tokens, setTokenIcons) => {
+  const defaultIconUrl = '/question.svg';
   try {
+    const ids = tokens.map(token => token.code).join(',');
     const response = await fetch(
-      'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum,bitcoin,tether,dai'
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}`
     );
     const data = await response.json();
     const icons = {};
-    data.forEach(token => {
-      icons[token.symbol.toUpperCase()] = token.image;
+
+    tokens.forEach(token => {
+      const tokenData = data.find(item => item.id === token.code);
+      if (tokenData && tokenData.image) {
+        icons[token.symbol.toUpperCase()] = tokenData.image;
+      } else {
+        icons[token.symbol.toUpperCase()] = defaultIconUrl;
+      }
     });
+
     setTokenIcons(icons);
   } catch (error) {
     console.error('Error fetching token icons:', error);
   }
 };
+
+
 
 // Fetch account balance from worker back-end
 export const fetchAccountBalances = async (account, setBalances) => {
