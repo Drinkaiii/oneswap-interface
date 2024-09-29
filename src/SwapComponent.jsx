@@ -288,6 +288,12 @@ const SwapComponent = () => {
     } catch (error) {
       console.error("Error while swapping tokens:", error);
       setIsWaitingForTransaction(false); // Hide waiting modal on error
+      // Show an error notification
+      notification.error({
+        message: 'Transaction Failed',
+        description: 'There was an error processing your transaction. Please try again.',
+        placement: 'topRight'
+      });
     }
   };
 
@@ -423,8 +429,8 @@ const SwapComponent = () => {
         }
         open={isWaitingForTransaction}
         footer={
-          <div style={{ textAlign: 'center' }}>
-            <Button type="text" onClick={() => setIsWaitingForTransaction(false)}>
+          <div style={{ textAlign: 'center', color: 'blue' }}>
+            <Button type="text" style={{ color: 'blue'}} onClick={() => setIsWaitingForTransaction(false)}>
               Close Window
             </Button>
           </div>
