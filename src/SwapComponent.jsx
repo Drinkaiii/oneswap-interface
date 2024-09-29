@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Modal, List, Typography, Card, Slider } from 'antd';
-import { SwapOutlined } from '@ant-design/icons';
+import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification  } from 'antd';
+import { SwapOutlined, LoadingOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
@@ -38,6 +38,8 @@ const SwapComponent = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSelectingSell, setIsSelectingSell] = useState(true);
   const [tokenIcons, setTokenIcons] = useState({});
+  // State for waiting modal
+  const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
 
   const { client, connected, sessionId, estimateResponse } = useWebSocket();
 
@@ -91,6 +93,7 @@ const SwapComponent = () => {
 
   // Fetch token icons from CoinGecko
   async function fetchTokenIcons(){
+
     try {
       const response = await fetch(
         'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=ethereum,bitcoin,tether,dai'
@@ -178,6 +181,9 @@ const SwapComponent = () => {
       alert("請連接錢包");
       return;
     }
+
+    setIsWaitingForTransaction(true); // Show waiting modal
+
     try {
   
       // initialize the contract
@@ -211,7 +217,31 @@ const SwapComponent = () => {
         transactionParameters.exchange,
         transactionParameters.path,
         transactionParameters.poolId
-      ).send({ from: account });
+      ).send({ from: account })
+      .on('transactionHash', (hash) => {
+        // Immediately close the waiting modal after transaction is signed
+        setIsWaitingForTransaction(false);
+      })
+      .on('receipt', (receipt) => {
+        console.log("Transaction Success!", receipt);
+        // Show a success notification
+        notification.success({
+          message: 'Transaction Successful',
+          description: 'Your transaction has been confirmed successfully.',
+          placement: 'topRight'
+        });
+      })
+      .on('error', (error) => {
+        console.error("Transaction Error:", error);
+        // Hide the modal in case of an error
+        setIsWaitingForTransaction(false);
+        // Show an error notification
+        notification.error({
+          message: 'Transaction Failed',
+          description: 'There was an error processing your transaction. Please try again.',
+          placement: 'topRight'
+        });
+      });
   
       // get tx
       console.log("Transaction success!", tx);
@@ -253,9 +283,11 @@ const SwapComponent = () => {
         });
       } else {
         console.error("TradeExecuted event ABI not found");
+        setIsWaitingForTransaction(false); // Hide waiting modal when done
       }
     } catch (error) {
       console.error("Error while swapping tokens:", error);
+      setIsWaitingForTransaction(false); // Hide waiting modal on error
     }
   };
 
@@ -382,6 +414,29 @@ const SwapComponent = () => {
       <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', margin: '50px 0',width: '100%', backgroundColor: '#f0f2f5' }}>
         <TransactionHistory account={account} latestTransaction={latestTransaction} />
       </div>
+      {/* Waiting Modal */}
+      <Modal
+        title={
+          <div style={{ textAlign: 'center', width: '100%', fontWeight: 'bold' }}>
+            Waiting for Transaction Confirmation
+          </div>
+        }
+        open={isWaitingForTransaction}
+        footer={
+          <div style={{ textAlign: 'center' }}>
+            <Button type="text" onClick={() => setIsWaitingForTransaction(false)}>
+              Close Window
+            </Button>
+          </div>
+        }
+        closable={false}
+        centered
+      >
+        <div style={{ textAlign: 'center' }}>
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 }} spin />} style={{ margin: '50px' }} />
+          <p>Please sign the transaction in your wallet...</p>
+        </div>
+      </Modal>
     </div>
   );
 };
