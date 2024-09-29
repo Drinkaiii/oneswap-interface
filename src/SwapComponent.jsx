@@ -5,6 +5,8 @@ import CountUp from 'react-countup';
 import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
+import TransactionHistory from './TransactionHistory';
+import { toNormalUnit, toSmallestUnit } from './utils';
 
 const { Text } = Typography;
 
@@ -17,24 +19,7 @@ const availableTokens = [
 
 // Contract and ABI
 const contractAddress = "0x635D90a6D17d228423385518Ce597300C4fE0260"; // Aggregator Contract
-const contractABI = [
-  {
-    "inputs": [
-      { "internalType": "address", "name": "tokenIn", "type": "address" },
-      { "internalType": "address", "name": "tokenOut", "type": "address" },
-      { "internalType": "uint256", "name": "amountIn", "type": "uint256" },
-      { "internalType": "uint256", "name": "minAmountOut", "type": "uint256" },
-      { "internalType": "uint256", "name": "deadline", "type": "uint256" },
-      { "internalType": "enum DexAggregator.Exchange", "name": "exchange", "type": "uint8" },
-      { "internalType": "address[]", "name": "path", "type": "address[]" },
-      { "internalType": "bytes32", "name": "poolId", "type": "bytes32" }
-    ],
-    "name": "swapTokens",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-];
+const contractABI = [{"inputs":[{"internalType":"address","name":"_uniswapRouter","type":"address"},{"internalType":"address","name":"_balancerVault","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"trader","type":"address"},{"indexed":true,"internalType":"address","name":"tokenIn","type":"address"},{"indexed":true,"internalType":"address","name":"tokenOut","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountOut","type":"uint256"},{"indexed":false,"internalType":"enum DexAggregator.Exchange","name":"exchange","type":"uint8"}],"name":"TradeExecuted","type":"event"},{"inputs":[],"name":"balancerVault","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"address","name":"tokenOut","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"minAmountOut","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"enum DexAggregator.Exchange","name":"exchange","type":"uint8"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"bytes32","name":"poolId","type":"bytes32"}],"name":"swapTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"uniswapRouter","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newFeePercent","type":"uint256"}],"name":"updateFeePercent","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
 const SwapComponent = () => {
 
@@ -55,6 +40,8 @@ const SwapComponent = () => {
   const [tokenIcons, setTokenIcons] = useState({});
 
   const { client, connected, sessionId, estimateResponse } = useWebSocket();
+
+  const [latestTransaction, setLatestTransaction] = useState(null);
 
   // fetch user and token data
   useEffect(() => {
@@ -228,146 +215,173 @@ const SwapComponent = () => {
   
       // get tx
       console.log("Transaction success!", tx);
-  
+      const events = tx.events;
+      console.log(events);
+      const eventAbi = contractABI.find(
+        (item) => item.type === 'event' && item.name === 'TradeExecuted'
+      );
+
+      if (eventAbi) {
+        const eventSignature = web3.eth.abi.encodeEventSignature(eventAbi);
+
+        tx.logs.forEach((log) => {
+          if (log.topics[0] === eventSignature) {
+            const decodedEvent = web3.eth.abi.decodeLog(
+              eventAbi.inputs,
+              log.data,
+              log.topics.slice(1)
+            );
+            const newTransaction = {
+              transactionHash: tx.transactionHash,
+              tokenIn: {
+                symbol: sellToken.symbol,
+                address: decodedEvent.tokenIn,
+                decimals: sellToken.decimals,
+              },
+              tokenOut: {
+                symbol: buyToken.symbol,
+                address: decodedEvent.tokenOut,
+                decimals: buyToken.decimals,
+              },
+              amountIn: decodedEvent.amountIn.toString(),
+              amountOut: decodedEvent.amountOut.toString(),
+              exchanger: decodedEvent.exchange,
+              createdAt: new Date().toISOString(),
+            };
+            setLatestTransaction(newTransaction);
+          }
+        });
+      } else {
+        console.error("TradeExecuted event ABI not found");
+      }
     } catch (error) {
       console.error("Error while swapping tokens:", error);
     }
   };
-
-  // convert to normal unit
-  function toNormaltUnit(amount, decimals) {
-    if (amount === "")
-      return ""
-    const bigNumberAmount = BigNumber.isBigNumber(amount) ? amount : new BigNumber(amount);
-    const factor = new BigNumber(10).pow(decimals);
-    return Number(bigNumberAmount.div(factor).toPrecision(10));
-  }
-
-  // convert to the smallest unit
-  function toSmallestUnit(amount, decimals) {
-    const bigNumberAmount = BigNumber.isBigNumber(amount) ? amount : new BigNumber(amount);
-    const factor = new BigNumber(10).pow(decimals);
-    return bigNumberAmount.times(factor);
-  }
 
   // get user balance
   function getBalanceForToken(tokenAddress){
     const tokenData = balances[tokenAddress.toLowerCase()];
     if (!tokenData || !tokenData.balance)
       return "0.0000"; 
-    const tokenBalance = toNormaltUnit(tokenData.balance, tokenData.decimals); 
+    const tokenBalance = toNormalUnit(tokenData.balance, tokenData.decimals); 
     return tokenBalance;
   };
 
   return (
-    <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', width: '400px', backgroundColor: '#f0f2f5' }}>
-      {/* Sell Token Area */}
-      <Card style={{ marginBottom: '20px', borderRadius: '8px' }}>
-        <Text type="secondary">Sell</Text>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Input
-            value={toNormaltUnit(sellAmount, 18)}
-            onChange={(e) => {
-              const inputValue = e.target.value;
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+      <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', width: '400px', backgroundColor: '#f0f2f5' }}>
+        {/* Sell Token Area */}
+        <Card style={{ marginBottom: '20px', borderRadius: '8px' }}>
+          <Text type="secondary">Sell</Text>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Input
+              value={toNormalUnit(sellAmount, 18)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
 
-              // if input is invalid, set sellAmount 0
-              if (inputValue === "" || inputValue === '0' || isNaN(inputValue)) {
-                setSellAmount("");
-                setBuyAmount(new BigNumber(0));
-                setEffectAmount(toNormaltUnit(sellAmount, 18));
-              } else {
-                setSellAmount(toSmallestUnit(inputValue, 18));
-                setEffectAmount(toNormaltUnit(sellAmount, 18));
-              }
-            }}
-            style={{ fontSize: '40px', paddingLeft: "0px", border: 'none', boxShadow: 'none', outline: 'none' }}
-          />
-          <Button 
-            onClick={() => showTokenSelection(true)} 
-            style={{ fontSize: '30px', padding: '0 12px', height: '100%', display: 'flex', alignItems: 'center', backgroundColor: 'white', color: 'black' }}
-          >
-            {tokenIcons[sellToken.symbol] && (
-              <img 
-                src={tokenIcons[sellToken.symbol]} 
-                alt={sellToken.symbol} 
-                style={{ width: '20px', marginRight: '8px' }} 
-              />
-            )}
-            {sellToken.symbol}
-          </Button>
-        </div>
-        <Text type="secondary">Balance: { getBalanceForToken(sellToken.address)}</Text>
-      </Card>
-
-      {/* Buy Token Area */}
-      <Card style={{ marginBottom: '20px', borderRadius: '8px' }}>
-        <Text type="secondary">Buy</Text>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ fontSize: '40px', paddingLeft: "0px", flex: 1 }}>
-            <CountUp 
-              start={effectAmount}
-              end={toNormaltUnit(buyAmount,18)}
-              duration={1.2}
-              decimals={3}
+                // if input is invalid, set sellAmount 0
+                if (inputValue === "" || inputValue === '0' || isNaN(inputValue)) {
+                  setSellAmount("");
+                  setBuyAmount(new BigNumber(0));
+                  setEffectAmount(toNormalUnit(sellAmount, 18));
+                } else {
+                  setSellAmount(toSmallestUnit(inputValue, 18));
+                  setEffectAmount(toNormalUnit(sellAmount, 18));
+                }
+              }}
+              style={{ fontSize: '40px', paddingLeft: "0px", border: 'none', boxShadow: 'none', outline: 'none' }}
             />
+            <Button 
+              onClick={() => showTokenSelection(true)} 
+              style={{ fontSize: '30px', padding: '0 12px', height: '100%', display: 'flex', alignItems: 'center', backgroundColor: 'white', color: 'black' }}
+            >
+              {tokenIcons[sellToken.symbol] && (
+                <img 
+                  src={tokenIcons[sellToken.symbol]} 
+                  alt={sellToken.symbol} 
+                  style={{ width: '20px', marginRight: '8px' }} 
+                />
+              )}
+              {sellToken.symbol}
+            </Button>
           </div>
+          <Text type="secondary">Balance: { getBalanceForToken(sellToken.address)}</Text>
+        </Card>
 
-          <Button 
-            onClick={() => showTokenSelection(false)} 
-            style={{ fontSize: '30px', padding: '0 12px', height: '100%', display: 'flex', alignItems: 'center', backgroundColor: 'white', color: 'black'}}
-          >
-            {tokenIcons[buyToken.symbol] && (
-              <img 
-                src={tokenIcons[buyToken.symbol]} 
-                alt={buyToken.symbol} 
-                style={{ width: '20px', marginRight: '8px' }} 
+        {/* Buy Token Area */}
+        <Card style={{ marginBottom: '20px', borderRadius: '8px' }}>
+          <Text type="secondary">Buy</Text>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ fontSize: '40px', paddingLeft: "0px", flex: 1 }}>
+              <CountUp 
+                start={effectAmount}
+                end={toNormalUnit(buyAmount,18)}
+                duration={1.2}
+                decimals={3}
               />
-            )}
-            {buyToken.symbol}
-          </Button>
-        </div>
-        <Text type="secondary">Balance: {getBalanceForToken(buyToken.address)}</Text>
-      </Card>
-
-      {/* Slippage Control */}
-      <div style={{ marginBottom: '20px' }}>
-        <Text type="secondary">Slippage: {slippage}%</Text>
-        <Slider
-          min={0.1}
-          max={5}
-          step={0.1}
-          value={slippage}
-          onChange={handleSlippageChange}
-        />
-      </div>
-
-      {estimateResponse && (
-            <div style={{marginBottom: "15px"}}>
-              <Text type="secondary" style={{ display: 'block' }}>Best Exchange: {estimateResponse.data[0].liquidity.exchanger}</Text>
-              <Text type="secondary" style={{ display: 'block' }}>Min Amount Get: {toNormaltUnit(minAmountOut,18)}</Text>
             </div>
-        )}
 
-      <Button type="primary" block onClick={handleSwap} icon={<SwapOutlined />}>
-        Swap
-      </Button>
-      <Modal
-        title="Select a token"
-        open={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
-        footer={null}
-      >
-        <List
-          dataSource={availableTokens}
-          renderItem={(item) => (
-            <List.Item onClick={() => handleTokenSelect(item)}>
-              {tokenIcons[item.symbol] && <img src={tokenIcons[item.symbol]} alt={item.symbol} style={{ width: '30px', marginRight: '8px' }} />}
-              <Text style={{ fontSize: '25px'}}>{item.symbol}</Text> 
-              <Text type="secondary">Balance: {getBalanceForToken(item.address)}</Text>
-            </List.Item>
+            <Button 
+              onClick={() => showTokenSelection(false)} 
+              style={{ fontSize: '30px', padding: '0 12px', height: '100%', display: 'flex', alignItems: 'center', backgroundColor: 'white', color: 'black'}}
+            >
+              {tokenIcons[buyToken.symbol] && (
+                <img 
+                  src={tokenIcons[buyToken.symbol]} 
+                  alt={buyToken.symbol} 
+                  style={{ width: '20px', marginRight: '8px' }} 
+                />
+              )}
+              {buyToken.symbol}
+            </Button>
+          </div>
+          <Text type="secondary">Balance: {getBalanceForToken(buyToken.address)}</Text>
+        </Card>
+
+        {/* Slippage Control */}
+        <div style={{ marginBottom: '20px' }}>
+          <Text type="secondary">Slippage: {slippage}%</Text>
+          <Slider
+            min={0.1}
+            max={5}
+            step={0.1}
+            value={slippage}
+            onChange={handleSlippageChange}
+          />
+        </div>
+
+        {estimateResponse && (
+              <div style={{marginBottom: "15px"}}>
+                <Text type="secondary" style={{ display: 'block' }}>Best Exchange: {estimateResponse.data[0].liquidity.exchanger}</Text>
+                <Text type="secondary" style={{ display: 'block' }}>Min Amount Get: {toNormalUnit(minAmountOut,18)}</Text>
+              </div>
           )}
-        />
-      </Modal>
+
+        <Button type="primary" block onClick={handleSwap} icon={<SwapOutlined />}>
+          Swap
+        </Button>
+        <Modal
+          title="Select a token"
+          open={isModalVisible}
+          onCancel={() => setIsModalVisible(false)}
+          footer={null}
+        >
+          <List
+            dataSource={availableTokens}
+            renderItem={(item) => (
+              <List.Item onClick={() => handleTokenSelect(item)}>
+                {tokenIcons[item.symbol] && <img src={tokenIcons[item.symbol]} alt={item.symbol} style={{ width: '30px', marginRight: '8px' }} />}
+                <Text style={{ fontSize: '25px'}}>{item.symbol}</Text> 
+                <Text type="secondary">Balance: {getBalanceForToken(item.address)}</Text>
+              </List.Item>
+            )}
+          />
+        </Modal>
+      </div>
+      <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', margin: '50px 0',width: '100%', backgroundColor: '#f0f2f5' }}>
+        <TransactionHistory account={account} latestTransaction={latestTransaction} />
+      </div>
     </div>
   );
 };
