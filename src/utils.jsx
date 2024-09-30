@@ -17,6 +17,12 @@ export function toSmallestUnit(amount, decimals) {
   return bigNumberAmount.times(factor);
 }
 
+// Helper function to format token amounts
+export function formatTokenAmount(amount, decimals){
+  const formattedAmount = new BigNumber(amount).div(new BigNumber(10).pow(decimals)).toFixed(4, BigNumber.ROUND_DOWN);
+  return formattedAmount.replace(/\.?0+$/, '');
+};
+
 // Fetch token icons from CoinGecko
 export const fetchTokenIcons = async (tokens, setTokenIcons) => {
   const defaultIconUrl = '/question.svg';
