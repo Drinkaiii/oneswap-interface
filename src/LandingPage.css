@@ -1,0 +1,255 @@
+@import "antd/dist/reset.css";
+
+:root {
+  --red: #ef476f;
+  --yellow: #ffd166;
+  --green: #06d6a0;
+  --blue: #118ab2;
+  --dark-blue: #073b4c;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.landing-page {
+  color: var(--dark-blue);
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: rgba(7, 59, 76, 0.8);
+  z-index: 1000;
+}
+
+header h1 {
+  font-size: 24px;
+  color: var(--yellow);
+  margin: 0;
+}
+
+.launch-button {
+  background-color: var(--red);
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.hero {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 40px;
+  background: linear-gradient(
+    45deg,
+    var(--red),
+    var(--yellow),
+    var(--green),
+    var(--blue)
+  );
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+  color: white;
+  position: relative;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(7, 59, 76, 0.7);
+}
+
+.hero-content {
+  max-width: 800px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero h2 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.cta-button {
+  background-color: #06d6a0;
+  color: white;
+  margin-top: 50px;
+  padding: 15px 30px;
+  font-size: 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  z-index: 10;
+}
+
+.cta-button:hover {
+  background-color: #118ab2;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.benefits {
+  display: flex;
+  justify-content: space-around;
+  padding: 60px 40px;
+  background-color: white;
+}
+
+.benefit-item {
+  text-align: center;
+  width: 30%;
+}
+
+.benefit-icon {
+  font-size: 48px;
+  color: var(--green);
+  margin-bottom: 20px;
+}
+
+.testimonial {
+  background-color: var(--green);
+  color: white;
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.testimonial blockquote {
+  font-size: 24px;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar {
+  margin-right: 20px;
+}
+
+footer {
+  text-align: center;
+  padding: 20px 40px;
+  background-color: var(--dark-blue);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 80px 20px;
+  }
+
+  .hero h2 {
+    font-size: 36px;
+  }
+
+  .benefits {
+    flex-direction: column;
+  }
+
+  .benefit-item {
+    width: 100%;
+    margin-bottom: 40px;
+  }
+}
+
+/* Existing styles remain unchanged */
+
+.supported-tokens {
+  padding: 60px 0;
+  background-color: var(--dark-blue);
+  color: white;
+}
+
+.supported-tokens h3 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.token-scroll-container {
+  overflow-x: scroll; /* Enable horizontal scrolling */
+  overflow-y: hidden;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.token-scroll-container::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for WebKit browsers */
+}
+
+.token-scroll-container {
+  overflow: hidden;
+  width: 100%;
+}
+
+.token-list {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scroll 20s linear infinite;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.token-scroll {
+  white-space: nowrap;
+}
+
+.token-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 20px;
+  min-width: 80px;
+}
+
+.token-item img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  transition: transform 0.3s ease;
+}
+
+.token-item:hover img {
+  transform: scale(1.1);
+}
+
+.token-item span {
+  font-size: 14px;
+}
