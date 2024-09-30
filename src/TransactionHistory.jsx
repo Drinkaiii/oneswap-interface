@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Typography, Table } from 'antd';
 import BigNumber from 'bignumber.js';
 import { WalletContext } from './WalletProvider';
-import { toNormalUnit } from './utils';
+import { toNormalUnit, formatTokenAmount } from './utils';
 
 const { Title } = Typography;
 
@@ -78,7 +78,7 @@ const TransactionHistory = ({ tokenIcons, latestTransaction }) => {
       key: 'amountIn',
       render: (amountIn, record) => {
         const decimals = record.tokenIn && record.tokenIn.decimals ? record.tokenIn.decimals : 18;
-        return amountIn ? toNormalUnit(new BigNumber(amountIn).toFixed(), decimals) : '0';
+        return amountIn ? formatTokenAmount(amountIn, decimals) : '0';  // Format to 4 decimal places
       },
     },
     {
@@ -105,7 +105,7 @@ const TransactionHistory = ({ tokenIcons, latestTransaction }) => {
       key: 'amountOut',
       render: (amountOut, record) => {
         const decimals = record.tokenOut && record.tokenOut.decimals ? record.tokenOut.decimals : 18;
-        return amountOut ? toNormalUnit(new BigNumber(amountOut).toFixed(), decimals) : '0';
+        return amountOut ? formatTokenAmount(amountOut, decimals) : '0';  // Format to 4 decimal places
       },
     },
     {

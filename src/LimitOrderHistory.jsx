@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Typography, Spin } from 'antd';
+import { formatTokenAmount } from './utils';
+import { Table, Typography, Spin, Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import BigNumber from 'bignumber.js';
 
@@ -7,16 +8,16 @@ const { Title, Text } = Typography;
 
 const host = "https://d1edophfzx4z61.cloudfront.net";
 
-const OrderHistory = ({ accountAddress, tokenIcons, latestTransaction }) => {
+const OrderHistory = ({ account, tokenIcons, latestTransaction, handleCancelOrder }) => {
   const [orderHistory, setOrderHistory] = useState([]); // State to store order history
   const [isLoading, setIsLoading] = useState(false); // State for loading
 
   // Fetch order history when the component loads
   useEffect(() => {
-    if (accountAddress) {
-      fetchOrderHistory(accountAddress);
+    if (account) {
+      fetchOrderHistory(account);
     }
-  }, [accountAddress]);
+  }, [account]);
 
   // listen the newsest transaction
   useEffect(() => {
@@ -42,18 +43,13 @@ const OrderHistory = ({ accountAddress, tokenIcons, latestTransaction }) => {
     }
   };
 
-  // Helper function to format token amounts
-  const formatTokenAmount = (amount, decimals) => {
-    return new BigNumber(amount).div(new BigNumber(10).pow(decimals)).toString();
-  };
-
   // Define table columns
   const columns = [
     {
       title: 'Order ID',
       dataIndex: 'orderId',
       key: 'orderId',
-      sorter: (a, b) => new BigNumber(b.orderId).minus(new BigNumber(a.orderId)).toNumber(),
+      sorter: (a, b) => BigNumber(b.orderId).minus(BigNumber(a.orderId)).toNumber(),
       defaultSortOrder: 'descend',
     },
     {
@@ -116,17 +112,21 @@ const OrderHistory = ({ accountAddress, tokenIcons, latestTransaction }) => {
       title: 'Result',
       dataIndex: 'finalAmountOut',
       key: 'finalAmountOut',
-      render: (finalAmountOut, record) =>
-        record.status === 'filled' ? (
-          formatTokenAmount(finalAmountOut, record.tokenOut.decimals)
-        ) : (
-          '-'
-        ),
+      render: (finalAmountOut, record) => {
+        if (record.status === 'filled') {
+          return formatTokenAmount(finalAmountOut, record.tokenOut.decimals);
+        } else if (record.status === 'canceled') {
+          return 'Canceled';
+        } else {
+          return (
+            <Button color="primary" variant="filled" onClick={() => handleCancelOrder(record.orderId)}>
+              Cancel Order
+            </Button>
+          );
+        }
+      },
     },
   ];
-  
-  
-  
 
   return (
     <div style={{ marginTop: '20px' }}>

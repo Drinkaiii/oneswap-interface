@@ -89,11 +89,6 @@ const LimitOrderComponent = () => {
     }
   }, [estimateResponse, slippage]);
   
-  // handle slippage change
-  const handleSlippageChange = (value) => {
-    setSlippage(value);
-  };
-  
   // send estimate request by WebSocket
   const sendEstimateRequest = () => {
     const estimateRequest = {
@@ -215,7 +210,52 @@ const LimitOrderComponent = () => {
       });
     }
   };
+
+  // Function to handle order cancellation
+const handleCancelOrder = async (orderId) => {
+    if (!account || !web3) {
+      notification.error({
+        message: 'Cancellation Failed',
+        description: 'No wallet connection found. Please connect your wallet.',
+        placement: 'topRight',
+      });
+      return;
+    }
   
+    try {
+      // Initialize contract
+      const contract = new web3.eth.Contract(contractABI, contractAddress);
+      
+      // Call the cancelOrder method
+      await contract.methods.cancelOrder(orderId).send({ from: account })
+        .on('transactionHash', (hash) => {
+          console.log("Transaction hash for cancellation:", hash);
+        })
+        .on('receipt', (receipt) => {
+          console.log("Order cancellation successful!", receipt);
+          notification.success({
+            message: 'Order Cancelled',
+            description: `Order ${orderId} has been successfully cancelled.`,
+            placement: 'topRight',
+          });
+          
+          // Optionally, you can update the orderHistory state to reflect the change
+          setOrderHistory((prevHistory) => 
+            prevHistory.map(order => order.orderId === orderId ? { ...order, status: 'cancelled' } : order)
+          );
+        })
+        .on('error', (error) => {
+          console.error("Cancellation Error:", error);
+          notification.error({
+            message: 'Cancellation Failed',
+            description: `Failed to cancel order ${orderId}. Please try again.`,
+            placement: 'topRight',
+          });
+        });
+    } catch (error) {
+      console.error("Error while cancelling order:", error);
+    }
+  };  
 
   // get user balance
   function getBalanceForToken(tokenAddress){
@@ -378,7 +418,7 @@ const LimitOrderComponent = () => {
       <div>
         {/* Order History Component */}
         <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', margin: '50px 0',width: '100%', backgroundColor: '#f0f2f5' }}>
-            <LimitOrderHistory accountAddress={account} tokenIcons={tokenIcons} latestTransaction={latestTransaction} />
+            <LimitOrderHistory account={account} tokenIcons={tokenIcons} latestTransaction={latestTransaction} handleCancelOrder={handleCancelOrder}/>
         </div>
       </div>
       {/* Waiting Modal */}
