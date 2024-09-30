@@ -6,6 +6,8 @@ import { toNormalUnit } from './utils';
 
 const { Title } = Typography;
 
+const host = "https://d1edophfzx4z61.cloudfront.net";
+
 const TransactionHistory = ({ tokenIcons, latestTransaction }) => {
   const { web3, account } = useContext(WalletContext);
   const [transactions, setTransactions] = useState([]);
@@ -26,7 +28,7 @@ const TransactionHistory = ({ tokenIcons, latestTransaction }) => {
 
   const fetchTransactionHistory = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/1.0/account/history/transactions?address=${account}`);
+      const response = await fetch(`${host}/api/1.0/account/history/transactions?address=${account}`);
       const data = await response.json();
 
       const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

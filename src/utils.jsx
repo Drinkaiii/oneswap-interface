@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js';
 
+const host = "https://d1edophfzx4z61.cloudfront.net";
+
 // convert to normal unit
 export function toNormalUnit(amount, decimals) {
   if (amount === "") return "";
@@ -41,8 +43,6 @@ export const fetchTokenIcons = async (tokens, setTokenIcons) => {
   }
 };
 
-
-
 // Fetch account balance from worker back-end
 export const fetchAccountBalances = async (account, setBalances) => {
   if (!account) {
@@ -50,7 +50,7 @@ export const fetchAccountBalances = async (account, setBalances) => {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:8080/api/1.0/account/info?address=${account}`);
+      const response = await fetch(`${host}/api/1.0/account/info?address=${account}`);
       const data = await response.json();
       
       const balanceMap = {};

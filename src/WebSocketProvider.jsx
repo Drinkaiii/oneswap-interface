@@ -7,6 +7,8 @@ const WebSocketContext = createContext(null);
 
 export const useWebSocket = () => useContext(WebSocketContext);
 
+const host = "https://d1edophfzx4z61.cloudfront.net";
+
 export const WebSocketProvider = ({ children }) => {
   const [client, setClient] = useState(null);
   const [connected, setConnected] = useState(false);
@@ -15,7 +17,7 @@ export const WebSocketProvider = ({ children }) => {
 
   useEffect(() => {
     // initialize STOMP client
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS(`${host}/ws`);
     const stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
