@@ -147,10 +147,15 @@ const LimitOrderComponent = () => {
 
   // place order function
   const handlePlaceOrder = async () => {
-    if (!account) {
-      alert("請連接錢包");
-      return;
-    }
+    if (!account){
+        // Show an error notification
+        notification.error({
+          message: 'Transaction Failed',
+          description: 'There was no wallet connection. Please connect your wallet.',
+          placement: 'topRight'
+        });
+        return;
+      }
   
     setIsWaitingForTransaction(true); // Show waiting modal
   
@@ -171,13 +176,25 @@ const LimitOrderComponent = () => {
           console.log("Transaction hash:", hash);
         })
         .on('receipt', (receipt) => {
-          console.log("Transaction Success!", receipt);
-          // Show a success notification
-          notification.success({
-            message: 'Order Placed Successfully',
-            description: 'Your order has been placed successfully.',
-            placement: 'topRight'
-          });
+            console.log("Transaction Success!", receipt);
+
+            const newTransaction = {
+                orderId: receipt.events.OrderPlaced.returnValues.orderId.toString(),
+                tokenIn: { symbol: sellToken.symbol, decimals: sellToken.decimals },
+                tokenOut: { symbol: buyToken.symbol, decimals: buyToken.decimals },
+                amountIn: amountIn,
+                minAmountOut: minAmountOutFormatted,
+                finalAmountOut: receipt.events.OrderExecuted ? receipt.events.OrderExecuted.returnValues.amountOut : null,
+                status: receipt.events.OrderExecuted ? 'filled' : 'unfilled',
+            };
+            console.log(newTransaction);
+            setLatestTransaction(newTransaction);
+
+            notification.success({
+                message: 'Order Placed Successfully',
+                description: 'Your order has been placed successfully.',
+                placement: 'topRight'
+            });
         })
         .on('error', (error) => {
           console.error("Transaction Error:", error);
@@ -361,7 +378,7 @@ const LimitOrderComponent = () => {
       <div>
         {/* Order History Component */}
         <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', margin: '50px 0',width: '100%', backgroundColor: '#f0f2f5' }}>
-            {account && <LimitOrderHistory accountAddress={account} tokenIcons={tokenIcons} />}
+            <LimitOrderHistory accountAddress={account} tokenIcons={tokenIcons} latestTransaction={latestTransaction} />
         </div>
       </div>
       {/* Waiting Modal */}

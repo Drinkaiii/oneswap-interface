@@ -5,7 +5,9 @@ import BigNumber from 'bignumber.js';
 
 const { Title, Text } = Typography;
 
-const OrderHistory = ({ accountAddress, tokenIcons }) => {
+const host = "https://d1edophfzx4z61.cloudfront.net";
+
+const OrderHistory = ({ accountAddress, tokenIcons, latestTransaction }) => {
   const [orderHistory, setOrderHistory] = useState([]); // State to store order history
   const [isLoading, setIsLoading] = useState(false); // State for loading
 
@@ -16,16 +18,21 @@ const OrderHistory = ({ accountAddress, tokenIcons }) => {
     }
   }, [accountAddress]);
 
+  // listen the newsest transaction
+  useEffect(() => {
+    if (latestTransaction) {
+      setOrderHistory((prevHistory) => [latestTransaction, ...prevHistory]);
+    }
+  }, [latestTransaction]);
+
   // Function to fetch order history using fetch API
   const fetchOrderHistory = async (address) => {
     setIsLoading(true); // Start loading
     try {
-      const response = await fetch(`http://localhost:8080/api/1.0/account/history/limitOrders?address=${address}`);
+      const response = await fetch(`${host}/api/1.0/account/history/limitOrders?address=${address}`);
       
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error('Failed to fetch order history');
-      }
-
       const data = await response.json();
       setOrderHistory(data); // Save the history in the state
     } catch (error) {
@@ -46,7 +53,7 @@ const OrderHistory = ({ accountAddress, tokenIcons }) => {
       title: 'Order ID',
       dataIndex: 'orderId',
       key: 'orderId',
-      sorter: (a, b) => b.orderId - a.orderId,
+      sorter: (a, b) => new BigNumber(b.orderId).minus(new BigNumber(a.orderId)).toNumber(),
       defaultSortOrder: 'descend',
     },
     {
@@ -119,6 +126,7 @@ const OrderHistory = ({ accountAddress, tokenIcons }) => {
   ];
   
   
+  
 
   return (
     <div style={{ marginTop: '20px' }}>
@@ -129,8 +137,9 @@ const OrderHistory = ({ accountAddress, tokenIcons }) => {
         <Table
           dataSource={orderHistory}
           columns={columns}
-          rowKey={(record) => record.id}
+          rowKey={(record) => record.orderId.toString()}
           pagination={{ pageSize: 10 }}
+          sortDirections={['descend', 'ascend']}
         />
       )}
     </div>
