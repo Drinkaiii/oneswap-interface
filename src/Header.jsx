@@ -1,6 +1,6 @@
 // Header.js
-import React, { useContext } from 'react';
-import { Layout, Menu, Button } from 'antd';
+import React, { useContext, useEffect } from 'react';
+import { Layout, Menu, Button, notification } from 'antd';
 import { Link } from 'react-router-dom';
 import { WalletContext } from './WalletProvider';
 
@@ -8,6 +8,16 @@ const { Header } = Layout;
 
 const AppHeader = () => {
   const { account, connectWallet, errorMessage } = useContext(WalletContext);
+
+  useEffect(() => {
+    if (errorMessage) {
+      notification.error({
+        message: 'Connect Failed',
+        description: errorMessage,
+        placement: 'topRight',
+      });
+    }
+  }, [errorMessage]);
 
   const menuItems = [
     { key: '1', label: <Link to="/swap">Swap</Link> },
@@ -26,7 +36,6 @@ const AppHeader = () => {
             Connect Wallet
           </Button>
         )}
-        {errorMessage && <span style={{ color: 'red', marginLeft: '16px' }}>{errorMessage}</span>}
       </div>
     </Header>
   );

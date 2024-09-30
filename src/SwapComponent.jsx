@@ -137,7 +137,12 @@ const SwapComponent = () => {
   const handleSwap = async () => {
 
     if (!account){
-      alert("請連接錢包");
+      // Show an error notification
+      notification.error({
+        message: 'Transaction Failed',
+        description: 'There was no wallet connection. Please connect your wallet.',
+        placement: 'topRight'
+      });
       return;
     }
 
