@@ -1,0 +1,215 @@
+.swap-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.swap-card {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 20px;
+  width: 400px;
+  background-color: #f0f2f5;
+}
+
+.token-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.token-label {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.token-input {
+  display: flex;
+  align-items: center;
+}
+
+.amount-input,
+.amount-display {
+  font-size: 40px;
+  padding-left: 0;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  background-color: transparent;
+  flex: 1;
+}
+
+.token-select-button {
+  font-size: 30px;
+  padding: 0 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  color: black;
+}
+
+.token-icon {
+  width: 20px;
+  margin-right: 8px;
+}
+
+.balance-text {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.slippage-control {
+  margin-bottom: 20px;
+}
+
+.slippage-label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.estimate-info {
+  margin-bottom: 15px;
+}
+
+.estimate-text {
+  display: block;
+}
+
+.swap-button.ant-btn-primary {
+  width: 100%;
+  background-color: var(--green);
+  border-color: var(--green);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px 20px;
+  height: auto;
+  transition: all 0.1s ease;
+}
+
+.swap-button.ant-btn-primary:hover {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.swap-button.ant-btn-primary:active {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* 確保按鈕在釋放後立即恢復原狀 */
+.swap-button.ant-btn-primary:focus:not(:active),
+.swap-button.ant-btn-primary.ant-btn-loading:not(:active) {
+  background-color: var(--green) !important;
+  border-color: var(--green) !important;
+  color: white !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* 覆蓋 Ant Design 的加載狀態樣式 */
+.swap-button.ant-btn-primary.ant-btn-loading::before {
+  opacity: 0 !important;
+}
+
+.swap-button.ant-btn-primary.ant-btn-loading .ant-btn-loading-icon {
+  color: white !important;
+}
+
+.transaction-history-container {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 50px 0;
+  width: 100%;
+  background-color: #f0f2f5;
+}
+
+.token-selection-modal .select-token-list-item {
+  cursor: pointer;
+}
+
+.token-selection-modal .token-name {
+  font-size: 25px;
+  margin-right: 10px;
+}
+
+.waiting-modal-title,
+.waiting-modal-footer,
+.waiting-modal-content {
+  text-align: center;
+}
+
+.waiting-modal-content .ant-spin {
+  margin: 50px 0;
+}
+
+.close-button {
+  color: var(--blue);
+}
+
+/* Slider 軌道樣式 */
+.slippage-control .ant-slider-track {
+  background-color: var(--green) !important;
+}
+
+/* Slider 把手樣式 */
+.slippage-control .ant-slider-handle {
+  border-color: var(--green) !important;
+  background-color: var(--green) !important;
+}
+
+/* Slider 懸停和聚焦時的樣式 */
+.slippage-control .ant-slider:hover .ant-slider-track {
+  background-color: var(--green-dark) !important;
+}
+
+.slippage-control .ant-slider:hover .ant-slider-handle,
+.slippage-control .ant-slider-handle:focus {
+  border-color: var(--green-dark) !important;
+}
+
+.slippage-control .ant-slider-handle.ant-tooltip-open {
+  border-color: var(--green-dark) !important;
+}
+
+/* Slider 拖動時的樣式 */
+.slippage-control .ant-slider-handle:active {
+  box-shadow: 0 0 0 5px rgba(6, 214, 160, 0.2) !important;
+}
+
+/* 調整 Slider 的其他部分 */
+.slippage-control .ant-slider-rail {
+  background-color: #e1e1e1 !important;
+}
+
+/* Slider handle 樣式 */
+.slippage-control .ant-slider-handle {
+  border-color: var(--green) !important;
+  background-color: var(--green) !important;
+}
+
+/* Slider 把手懸停和聚焦時的樣式 */
+.slippage-control .ant-slider:hover .ant-slider-handle,
+.slippage-control .ant-slider-handle:focus,
+.slippage-control
+  .ant-slider-handle-dragging.ant-slider-handle-dragging.ant-slider-handle-dragging {
+  border-color: var(--green-dark) !important;
+  background-color: var(--green-dark) !important;
+  box-shadow: 0 0 0 5px rgba(6, 214, 160, 0.2) !important;
+}
+
+/* 確保在拖動時保持顏色 */
+.slippage-control .ant-slider-handle:active {
+  border-color: var(--green-dark) !important;
+  background-color: var(--green-dark) !important;
+}
+
+/* 覆蓋任何可能的 Ant Design 預設樣式 */
+.slippage-control .ant-slider-handle::after {
+  box-shadow: 0 0 0 2px var(--green) !important;
+}

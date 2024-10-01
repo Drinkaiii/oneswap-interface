@@ -2,10 +2,15 @@
 
 :root {
   --red: #ef476f;
+  --red-dark: #d13d63; /* 新增：更深的红色 */
   --yellow: #ffd166;
+  --yellow-dark: #ffc233; /* 新增：更深的黄色 */
   --green: #06d6a0;
+  --green-dark: #05b185; /* 新增：更深的绿色 */
   --blue: #118ab2;
+  --blue-dark: #0e7494; /* 新增：更深的蓝色 */
   --dark-blue: #073b4c;
+  --dark-blue-darker: #052e3b; /* 新增：更深的深蓝色 */
 }
 
 body,
@@ -19,7 +24,7 @@ html {
   color: var(--dark-blue);
 }
 
-header {
+.landing-header {
   position: fixed;
   top: 0;
   left: 0;
@@ -32,7 +37,7 @@ header {
   z-index: 1000;
 }
 
-header h1 {
+.landing-title {
   font-size: 24px;
   color: var(--yellow);
   margin: 0;
@@ -44,28 +49,38 @@ header h1 {
   padding: 10px 20px;
   text-decoration: none;
   border-radius: 5px;
+  transition: background-color 0.3s ease;
 }
 
-.hero {
+.launch-button:hover {
+  background-color: var(--red-dark);
+}
+
+.hero-section {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 40px;
-  background: linear-gradient(
-    45deg,
-    var(--red),
-    var(--yellow),
-    var(--green),
-    var(--blue)
-  );
-  background-size: 400% 400%;
-  animation: gradientAnimation 15s ease infinite;
-  color: white;
   position: relative;
+  overflow: hidden;
+  color: white;
 }
 
-.hero::before {
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("/main.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+
+.hero-section::before {
   content: "";
   position: absolute;
   top: 0;
@@ -73,34 +88,37 @@ header h1 {
   right: 0;
   bottom: 0;
   background-color: rgba(7, 59, 76, 0.7);
+  z-index: 2;
 }
 
 .hero-content {
   max-width: 800px;
   text-align: center;
   position: relative;
-  z-index: 1;
+  z-index: 3;
 }
 
-.hero h2 {
+.hero-title {
   font-size: 48px;
   margin-bottom: 20px;
 }
 
-.cta-button {
-  background-color: #06d6a0;
+.hero-content .cta-button.ant-btn.ant-btn-primary {
+  background-color: var(--red);
+  border-color: var(--red);
   color: white;
   margin-top: 50px;
   padding: 15px 30px;
   font-size: 20px;
   border-radius: 5px;
   text-decoration: none;
-  transition: background-color 0.3s ease;
-  z-index: 10;
+  transition: all 0.3s ease;
 }
 
-.cta-button:hover {
-  background-color: #118ab2;
+.hero-content .cta-button.ant-btn.ant-btn-primary:hover,
+.hero-content .cta-button.ant-btn.ant-btn-primary:focus {
+  background-color: var(--red-dark);
+  border-color: var(--red-dark);
 }
 
 @keyframes gradientAnimation {
@@ -115,7 +133,7 @@ header h1 {
   }
 }
 
-.benefits {
+.benefits-section {
   display: flex;
   justify-content: space-around;
   padding: 60px 40px;
@@ -133,14 +151,14 @@ header h1 {
   margin-bottom: 20px;
 }
 
-.testimonial {
+.testimonial-section {
   background-color: var(--green);
   color: white;
   padding: 60px 40px;
   text-align: center;
 }
 
-.testimonial blockquote {
+.testimonial-quote {
   font-size: 24px;
   font-style: italic;
   margin-bottom: 20px;
@@ -152,11 +170,11 @@ header h1 {
   justify-content: center;
 }
 
-.avatar {
+.author-avatar {
   margin-right: 20px;
 }
 
-footer {
+.landing-footer {
   text-align: center;
   padding: 20px 40px;
   background-color: var(--dark-blue);
@@ -164,15 +182,15 @@ footer {
 }
 
 @media (max-width: 768px) {
-  .hero {
+  .hero-section {
     padding: 80px 20px;
   }
 
-  .hero h2 {
+  .hero-title {
     font-size: 36px;
   }
 
-  .benefits {
+  .benefits-section {
     flex-direction: column;
   }
 
@@ -182,28 +200,26 @@ footer {
   }
 }
 
-/* Existing styles remain unchanged */
-
-.supported-tokens {
+.supported-tokens-section {
   padding: 60px 0;
   background-color: var(--dark-blue);
   color: white;
 }
 
-.supported-tokens h3 {
+.supported-tokens-section h3 {
   text-align: center;
   margin-bottom: 30px;
 }
 
 .token-scroll-container {
-  overflow-x: scroll; /* Enable horizontal scrolling */
+  overflow-x: scroll;
   overflow-y: hidden;
   width: 100%;
   padding: 20px 0;
 }
 
 .token-scroll-container::-webkit-scrollbar {
-  display: none; /* Hide scrollbar for WebKit browsers */
+  display: none;
 }
 
 .token-scroll-container {
@@ -226,10 +242,6 @@ footer {
   }
 }
 
-.token-scroll {
-  white-space: nowrap;
-}
-
 .token-item {
   display: inline-flex;
   flex-direction: column;
@@ -238,7 +250,7 @@ footer {
   min-width: 80px;
 }
 
-.token-item img {
+.token-image {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -246,24 +258,22 @@ footer {
   transition: transform 0.3s ease;
 }
 
-.token-item:hover img {
+.token-item:hover .token-image {
   transform: scale(1.1);
 }
 
-.token-item span {
+.token-symbol {
   font-size: 14px;
 }
 
-/* ... community ... */
-
-.join-community {
+.community-section {
   background-color: var(--dark-blue);
   color: white;
   padding: 80px 0 60px;
   text-align: center;
 }
 
-.join-community h2 {
+.community-section h2 {
   font-size: 48px;
   margin-bottom: 40px;
   font-weight: bold;
@@ -297,6 +307,7 @@ footer {
 
 .social-links a:hover {
   transform: translateY(-5px);
+  color: var(--yellow-dark);
 }
 
 .social-links .anticon,
@@ -316,7 +327,7 @@ footer {
 }
 
 @media (max-width: 768px) {
-  .join-community h2 {
+  .community-section h2 {
     font-size: 36px;
   }
 

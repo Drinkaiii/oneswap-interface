@@ -7,7 +7,7 @@ import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
 import LimitOrderHistory  from './LimitOrderHistory';
 import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toSmallestUnit } from './utils';
-
+import './LimitOrderComponent.css';
 
 const { Text } = Typography;
 
@@ -267,18 +267,17 @@ const handleCancelOrder = async (orderId) => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-      <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', width: '400px', backgroundColor: '#f0f2f5' }}>
+    <div className="limit-order-container">
+      <div className="limit-order-card">
         {/* Sell Token Area */}
-        <Card style={{ marginBottom: '20px', borderRadius: '8px' }}>
-          <Text type="secondary">Sell</Text>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Card className="token-card sell-token">
+          <Text className="token-label">Sell</Text>
+          <div className="token-input">
             <Input
+              className="amount-input"
               value={toNormalUnit(sellAmount, 18)}
               onChange={(e) => {
                 const inputValue = e.target.value;
-
-                // if input is invalid, set sellAmount 0
                 if (inputValue === "" || inputValue === '0' || isNaN(inputValue)) {
                   setSellAmount("");
                   setEstimateAmount(new BigNumber(0));
@@ -288,159 +287,153 @@ const handleCancelOrder = async (orderId) => {
                   setEffectAmount(toNormalUnit(sellAmount, 18));
                 }
               }}
-              style={{ fontSize: '40px', paddingLeft: "0px", border: 'none', boxShadow: 'none', outline: 'none' }}
             />
             <Button 
-              onClick={() => showTokenSelection(true)} 
-              style={{ fontSize: '30px', padding: '0 12px', height: '100%', display: 'flex', alignItems: 'center', backgroundColor: 'white', color: 'black' }}
+              className="token-select-button"
+              onClick={() => showTokenSelection(true)}
             >
               {tokenIcons[sellToken.symbol] && (
                 <img 
+                  className="token-icon"
                   src={tokenIcons[sellToken.symbol]} 
                   alt={sellToken.symbol} 
-                  style={{ width: '20px', marginRight: '8px' }} 
                 />
               )}
               {sellToken.symbol}
             </Button>
           </div>
-          <Text type="secondary">Balance: { getBalanceForToken(sellToken.address)}</Text>
+          <Text className="balance-text">Balance: {getBalanceForToken(sellToken.address)}</Text>
         </Card>
 
         {/* Buy Token Area */}
-        <Card style={{ marginBottom: '20px', borderRadius: '8px' }}>
-          <Text type="secondary">Buy</Text>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Card className="token-card buy-token">
+          <Text className="token-label">Buy</Text>
+          <div className="token-input">
             <Input
+              className="amount-input"
               value={toNormalUnit(buyAmount, 18)}
               onChange={(e) => {
                 const inputValue = e.target.value;
-
-                // if input is invalid, set buyAmount 0
                 if (inputValue === "" || inputValue === '0' || isNaN(inputValue)) {
                   return;
                 } else {
                   setBuyAmount(toSmallestUnit(inputValue, 18));
                 }
               }}
-              style={{ fontSize: '40px', paddingLeft: "0px", border: 'none', boxShadow: 'none', outline: 'none' }}
             />
             <Button 
-              onClick={() => showTokenSelection(false)} 
-              style={{ fontSize: '30px', padding: '0 12px', height: '100%', display: 'flex', alignItems: 'center', backgroundColor: 'white', color: 'black' }}
+              className="token-select-button"
+              onClick={() => showTokenSelection(false)}
             >
               {tokenIcons[buyToken.symbol] && (
                 <img 
+                  className="token-icon"
                   src={tokenIcons[buyToken.symbol]} 
                   alt={buyToken.symbol} 
-                  style={{ width: '20px', marginRight: '8px' }} 
                 />
               )}
               {buyToken.symbol}
             </Button>
           </div>
-          <Text type="secondary">Balance: { getBalanceForToken(buyToken.address)}</Text>
+          <Text className="balance-text">Balance: {getBalanceForToken(buyToken.address)}</Text>
         </Card>
 
         {/* Estimate Area */}
-        <Card style={{ marginBottom: '20px', borderRadius: '8px' }}>
-            <Text type="secondary">Market</Text>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ fontSize: '25px', color: 'gray', display: 'flex', alignItems: 'center', paddingLeft: '0px', flex: 1 }}>
-                <CountUp 
-                    start={effectAmount}
-                    end={toNormalUnit(estimateAmount, 18)}
-                    duration={1.2}
-                    decimals={3}
-                />
-                </div>
-                
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {/* Buy Token Icon and Symbol */}
-                {tokenIcons[buyToken.symbol] && (
-                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
-                    <img 
-                        src={tokenIcons[buyToken.symbol]} 
-                        alt={buyToken.symbol} 
-                        style={{ width: '20px', marginRight: '8px' }} 
-                    />
-                    <Text style={{ fontSize: '16px' }}>{buyToken.symbol}</Text>
-                    </div>
-                )}
-                
-                {/* Slash Symbol */}
-                <Text style={{ fontSize: '24px', margin: '0 10px' }}>/</Text>
-                
-                {/* Sell Token Icon and Symbol */}
-                {tokenIcons[sellToken.symbol] && (
-                    <div style={{ display: 'flex', alignItems: 'center', marginRight: '10px' }}>
-                    <img 
-                        src={tokenIcons[sellToken.symbol]} 
-                        alt={sellToken.symbol} 
-                        style={{ width: '20px', marginRight: '8px' }} 
-                    />
-                    <Text style={{ fontSize: '16px' }}>{sellToken.symbol}</Text>
-                    </div>
-                )}
-                </div>
+        <Card className="estimate-card">
+          <Text className="estimate-label">Market</Text>
+          <div className="estimate-content">
+            <div className="estimate-amount">
+              <CountUp 
+                start={effectAmount}
+                end={toNormalUnit(estimateAmount, 18)}
+                duration={1.2}
+                decimals={3}
+              />
             </div>
-            
+            <div className="estimate-tokens">
+              <div className="token-display">
+                <img className="token-icon" src={tokenIcons[buyToken.symbol]} alt={buyToken.symbol} />
+                <Text className="token-symbol">{buyToken.symbol}</Text>
+              </div>
+              <Text className="separator">/</Text>
+              <div className="token-display">
+                <img className="token-icon" src={tokenIcons[sellToken.symbol]} alt={sellToken.symbol} />
+                <Text className="token-symbol">{sellToken.symbol}</Text>
+              </div>
+            </div>
+          </div>
         </Card>
-            {/* Quick Select Buttons */}
-            <div style={{ display: 'flex'}}>
-                <Button type="default" style={{margin:' 0 10px 30px 0', fontWeight: 600}} onClick={() => handleTargetPriceSelection(5)}>+5%</Button>
-                <Button type="default" style={{margin:' 0 10px 30px 0', fontWeight: 600}} onClick={() => handleTargetPriceSelection(10)}>+10%</Button>
-                <Button type="default" style={{margin:' 0 10px 30px 0', fontWeight: 600}} onClick={() => handleTargetPriceSelection(20)}>+20%</Button>
-                <Button type="default" style={{margin:' 0 10px 30px 0', fontWeight: 600}} onClick={() => handleTargetPriceSelection(30)}>+30%</Button>
-            </div>
 
-        <Button type="primary" block onClick={handlePlaceOrder} icon={<SwapOutlined />}>
+        {/* Quick Select Buttons */}
+        <div className="quick-select-buttons">
+          <Button className="percentage-button" onClick={() => handleTargetPriceSelection(5)}>+5%</Button>
+          <Button className="percentage-button" onClick={() => handleTargetPriceSelection(10)}>+10%</Button>
+          <Button className="percentage-button" onClick={() => handleTargetPriceSelection(20)}>+20%</Button>
+          <Button className="percentage-button" onClick={() => handleTargetPriceSelection(30)}>+30%</Button>
+        </div>
+
+        <Button 
+          className="place-order-button ant-btn ant-btn-primary" 
+          type="primary" 
+          onClick={handlePlaceOrder} 
+          icon={<SwapOutlined />}
+        >
           Place Order
         </Button>
-        <Modal
-          title="Select a token"
-          open={isModalVisible}
-          onCancel={() => setIsModalVisible(false)}
-          footer={null}
-        >
-          <List
-            dataSource={availableTokens}
-            renderItem={(item) => (
-              <List.Item onClick={() => handleTokenSelect(item)}>
-                {tokenIcons[item.symbol] && <img src={tokenIcons[item.symbol]} alt={item.symbol} style={{ width: '30px', marginRight: '8px' }} />}
-                <Text style={{ fontSize: '25px'}}>{item.symbol}</Text> 
-                <Text type="secondary">Balance: {getBalanceForToken(item.address)}</Text>
-              </List.Item>
-            )}
-          />
-        </Modal>
       </div>
-      <div>
-        {/* Order History Component */}
-        <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', margin: '50px 0',width: '100%', backgroundColor: '#f0f2f5' }}>
-            <LimitOrderHistory account={account} tokenIcons={tokenIcons} latestTransaction={latestTransaction} handleCancelOrder={handleCancelOrder}/>
-        </div>
+
+      {/* Order History Component */}
+      <div className="order-history-container">
+        <LimitOrderHistory 
+          account={account} 
+          tokenIcons={tokenIcons} 
+          latestTransaction={latestTransaction} 
+          handleCancelOrder={handleCancelOrder}
+        />
       </div>
+
+      {/* Token Selection Modal */}
+      <Modal
+        title="Select a token"
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        className="token-selection-modal"
+      >
+        <List
+          className="select-token-list"
+          dataSource={availableTokens}
+          renderItem={(item) => (
+            <List.Item className="select-token-list-item" onClick={() => handleTokenSelect(item)}>
+              <img className="token-icon" src={tokenIcons[item.symbol]} alt={item.symbol} />
+              <Text className="token-name">{item.symbol}</Text> 
+              <Text className="token-balance">Balance: {getBalanceForToken(item.address)}</Text>
+            </List.Item>
+          )}
+        />
+      </Modal>
+
       {/* Waiting Modal */}
       <Modal
         title={
-          <div style={{ textAlign: 'center', width: '100%', fontWeight: 'bold' }}>
+          <div className="waiting-modal-title">
             Waiting for Transaction Confirmation
           </div>
         }
         open={isWaitingForTransaction}
         footer={
-          <div style={{ textAlign: 'center', color: 'blue' }}>
-            <Button type="text" style={{ color: 'blue'}} onClick={() => setIsWaitingForTransaction(false)}>
+          <div className="waiting-modal-footer">
+            <Button type="text" onClick={() => setIsWaitingForTransaction(false)}>
               Close Window
             </Button>
           </div>
         }
         closable={false}
         centered
+        className="waiting-modal"
       >
-        <div style={{ textAlign: 'center' }}>
-          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 }} spin />} style={{ margin: '50px' }} />
+        <div className="waiting-modal-content">
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 }} spin />} />
           <p>Please sign the transaction in your wallet...</p>
         </div>
       </Modal>

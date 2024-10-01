@@ -7,7 +7,7 @@ import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
 import TransactionHistory from './TransactionHistory';
 import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toSmallestUnit } from './utils';
-
+import './SwapComponent.css';
 
 const { Text } = Typography;
 
@@ -271,18 +271,17 @@ const SwapComponent = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-      <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', width: '400px', backgroundColor: '#f0f2f5' }}>
+    <div className="swap-container">
+      <div className="swap-card">
         {/* Sell Token Area */}
-        <Card style={{ marginBottom: '20px', borderRadius: '8px' }}>
-          <Text type="secondary">Sell</Text>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Card className="token-card sell-token">
+          <Text className="token-label">Sell</Text>
+          <div className="token-input">
             <Input
+              className="amount-input"
               value={toNormalUnit(sellAmount, 18)}
               onChange={(e) => {
                 const inputValue = e.target.value;
-
-                // if input is invalid, set sellAmount 0
                 if (inputValue === "" || inputValue === '0' || isNaN(inputValue)) {
                   setSellAmount("");
                   setBuyAmount(new BigNumber(0));
@@ -292,30 +291,29 @@ const SwapComponent = () => {
                   setEffectAmount(toNormalUnit(sellAmount, 18));
                 }
               }}
-              style={{ fontSize: '40px', paddingLeft: "0px", border: 'none', boxShadow: 'none', outline: 'none' }}
             />
             <Button 
-              onClick={() => showTokenSelection(true)} 
-              style={{ fontSize: '30px', padding: '0 12px', height: '100%', display: 'flex', alignItems: 'center', backgroundColor: 'white', color: 'black' }}
+              className="token-select-button"
+              onClick={() => showTokenSelection(true)}
             >
               {tokenIcons[sellToken.symbol] && (
                 <img 
+                  className="token-icon"
                   src={tokenIcons[sellToken.symbol]} 
-                  alt={sellToken.symbol} 
-                  style={{ width: '20px', marginRight: '8px' }} 
+                  alt={sellToken.symbol}
                 />
               )}
               {sellToken.symbol}
             </Button>
           </div>
-          <Text type="secondary">Balance: { getBalanceForToken(sellToken.address)}</Text>
+          <Text className="balance-text">Balance: {getBalanceForToken(sellToken.address)}</Text>
         </Card>
 
         {/* Buy Token Area */}
-        <Card style={{ marginBottom: '20px', borderRadius: '8px' }}>
-          <Text type="secondary">Buy</Text>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ fontSize: '40px', paddingLeft: "0px", flex: 1 }}>
+        <Card className="token-card buy-token">
+          <Text className="token-label">Buy</Text>
+          <div className="token-input">
+            <div className="amount-display">
               <CountUp 
                 start={effectAmount}
                 end={toNormalUnit(buyAmount,18)}
@@ -323,28 +321,28 @@ const SwapComponent = () => {
                 decimals={3}
               />
             </div>
-
             <Button 
-              onClick={() => showTokenSelection(false)} 
-              style={{ fontSize: '30px', padding: '0 12px', height: '100%', display: 'flex', alignItems: 'center', backgroundColor: 'white', color: 'black'}}
+              className="token-select-button"
+              onClick={() => showTokenSelection(false)}
             >
               {tokenIcons[buyToken.symbol] && (
                 <img 
+                  className="token-icon"
                   src={tokenIcons[buyToken.symbol]} 
-                  alt={buyToken.symbol} 
-                  style={{ width: '20px', marginRight: '8px' }} 
+                  alt={buyToken.symbol}
                 />
               )}
               {buyToken.symbol}
             </Button>
           </div>
-          <Text type="secondary">Balance: {getBalanceForToken(buyToken.address)}</Text>
+          <Text className="balance-text">Balance: {getBalanceForToken(buyToken.address)}</Text>
         </Card>
 
         {/* Slippage Control */}
-        <div style={{ marginBottom: '20px' }}>
-          <Text type="secondary">Slippage: {slippage}%</Text>
+        <div className="slippage-control">
+          <Text className="slippage-label">Slippage: {slippage}%</Text>
           <Slider
+            className="slippage-slider"
             min={0.1}
             max={5}
             step={0.1}
@@ -354,56 +352,63 @@ const SwapComponent = () => {
         </div>
 
         {estimateResponse && (
-              <div style={{marginBottom: "15px"}}>
-                <Text type="secondary" style={{ display: 'block' }}>Best Exchange: {estimateResponse.data[0].liquidity.exchanger}</Text>
-                <Text type="secondary" style={{ display: 'block' }}>Min Amount Get: {toNormalUnit(minAmountOut,18)}</Text>
-              </div>
-          )}
+          <div className="estimate-info">
+            <Text className="estimate-text">Best Exchange: {estimateResponse.data[0].liquidity.exchanger}</Text>
+            <Text className="estimate-text">Min Amount Get: {toNormalUnit(minAmountOut,18)}</Text>
+          </div>
+        )}
 
-        <Button type="primary" block onClick={handleSwap} icon={<SwapOutlined />}>
+        <Button className="swap-button ant-btn ant-btn-primary" type="primary" onClick={handleSwap} icon={<SwapOutlined />}>
           Swap
         </Button>
-        <Modal
-          title="Select a token"
-          open={isModalVisible}
-          onCancel={() => setIsModalVisible(false)}
-          footer={null}
-        >
-          <List
-            dataSource={availableTokens}
-            renderItem={(item) => (
-              <List.Item onClick={() => handleTokenSelect(item)}>
-                {tokenIcons[item.symbol] && <img src={tokenIcons[item.symbol]} alt={item.symbol} style={{ width: '30px', marginRight: '8px' }} />}
-                <Text style={{ fontSize: '25px'}}>{item.symbol}</Text> 
-                <Text type="secondary">Balance: {getBalanceForToken(item.address)}</Text>
-              </List.Item>
-            )}
-          />
-        </Modal>
       </div>
-      <div style={{ border: '1px solid #d9d9d9', borderRadius: '8px', padding: '20px', margin: '50px 0',width: '100%', backgroundColor: '#f0f2f5' }}>
+      
+      <div className="transaction-history-container">
         <TransactionHistory account={account} tokenIcons={tokenIcons} latestTransaction={latestTransaction} />
       </div>
+
+      {/* Token Selection Modal */}
+      <Modal
+        title="Select a token"
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        className="token-selection-modal"
+      >
+        <List
+          className="select-token-list"
+          dataSource={availableTokens}
+          renderItem={(item) => (
+            <List.Item className="select-token-list-item" onClick={() => handleTokenSelect(item)}>
+              {tokenIcons[item.symbol] && <img className="token-icon" src={tokenIcons[item.symbol]} alt={item.symbol} />}
+              <Text className="token-name">{item.symbol}</Text> 
+              <Text className="token-balance">Balance: {getBalanceForToken(item.address)}</Text>
+            </List.Item>
+          )}
+        />
+      </Modal>
+
       {/* Waiting Modal */}
       <Modal
         title={
-          <div style={{ textAlign: 'center', width: '100%', fontWeight: 'bold' }}>
+          <div className="waiting-modal-title">
             Waiting for Transaction Confirmation
           </div>
         }
         open={isWaitingForTransaction}
         footer={
-          <div style={{ textAlign: 'center', color: 'blue' }}>
-            <Button type="text" style={{ color: 'blue'}} onClick={() => setIsWaitingForTransaction(false)}>
+          <div className="waiting-modal-footer">
+            <Button type="text" className="close-button" onClick={() => setIsWaitingForTransaction(false)}>
               Close Window
             </Button>
           </div>
         }
         closable={false}
         centered
+        className="waiting-modal"
       >
-        <div style={{ textAlign: 'center' }}>
-          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 }} spin />} style={{ margin: '50px' }} />
+        <div className="waiting-modal-content">
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 }} spin />} />
           <p>Please sign the transaction in your wallet...</p>
         </div>
       </Modal>

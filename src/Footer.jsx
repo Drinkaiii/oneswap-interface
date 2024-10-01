@@ -6,8 +6,8 @@ const { Footer } = Layout;
 
 const AppFooter = () => {
   return (
-    <Footer style={{ textAlign: 'center' }}>
-      OneSwap ©2024 Created by Kyle
+    <Footer className="app-footer">
+      <p className="footer-text">OneSwap ©2024 Created by Kyle</p>
     </Footer>
   );
 };

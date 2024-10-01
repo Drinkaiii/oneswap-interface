@@ -21,18 +21,24 @@ const AppHeader = () => {
 
   const menuItems = [
     { key: '1', label: <Link to="/swap">Swap</Link> },
-    { key: '2', label: <Link to="/limit">Limit Order</Link> },
+    { key: '2', label: <Link to="/limit">Limit</Link> },
     { key: '3', label: <Link to="/settings">Settings</Link> },
   ];
 
   return (
-    <Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']} items={menuItems} />
-      <div>
+    <Header className="app-header">
+      <Menu 
+        className="app-menu" 
+        theme="dark" 
+        mode="horizontal" 
+        defaultSelectedKeys={['1']} 
+        items={menuItems}
+      />
+      <div className="wallet-connect">
         {account ? (
-          <span style={{ color: 'white', marginRight: '16px' }}>{`Connected: ${account}`}</span>
+          <span className="wallet-address">{`Connected: ${account}`}</span>
         ) : (
-          <Button type="primary" onClick={connectWallet}>
+          <Button className="connect-button" type="primary" onClick={connectWallet}>
             Connect Wallet
           </Button>
         )}

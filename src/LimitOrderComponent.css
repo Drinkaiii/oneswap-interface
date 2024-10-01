@@ -1,0 +1,223 @@
+:root {
+  --red: #ef476f;
+  --red-dark: #d13d63;
+  --yellow: #ffd166;
+  --yellow-dark: #ffc233;
+  --green: #06d6a0;
+  --green-dark: #05b185;
+  --blue: #118ab2;
+  --blue-dark: #0e7494;
+  --dark-blue: #073b4c;
+  --dark-blue-darker: #052e3b;
+}
+
+.limit-order-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.limit-order-card {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 20px;
+  width: 400px;
+  background-color: #f0f2f5;
+}
+
+.token-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.token-label {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.token-input {
+  display: flex;
+  align-items: center;
+}
+
+.amount-input.ant-input {
+  font-size: 40px;
+  padding-left: 0;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  background-color: transparent;
+}
+
+.amount-input.ant-input:focus,
+.amount-input.ant-input-focused,
+.amount-input.ant-input:hover,
+.amount-input.ant-input:active {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.amount-input.ant-input:focus,
+.amount-input.ant-input-focused {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.amount-input.ant-input::-moz-focus-inner {
+  border: 0;
+}
+
+.amount-input.ant-input:focus,
+.amount-input.ant-input-focused {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+.token-select-button {
+  font-size: 30px;
+  padding: 0 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  color: black;
+}
+
+.token-icon {
+  width: 20px;
+  margin-right: 8px;
+}
+
+.balance-text {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.estimate-card {
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.estimate-label {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.estimate-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.estimate-amount {
+  font-size: 25px;
+  color: gray;
+}
+
+.estimate-tokens {
+  display: flex;
+  align-items: center;
+}
+
+.token-display {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.separator {
+  font-size: 24px;
+  margin: 0 10px;
+}
+
+.quick-select-buttons {
+  display: flex;
+  margin-bottom: 30px;
+}
+
+.percentage-button {
+  margin-right: 10px;
+  font-weight: 600;
+}
+
+.place-order-button.ant-btn-primary {
+  width: 100%;
+  background-color: var(--green);
+  border-color: var(--green);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px 20px;
+  height: auto;
+  transition: all 0.1s ease;
+}
+
+.place-order-button.ant-btn-primary:hover {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.place-order-button.ant-btn-primary:active {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.place-order-button.ant-btn-primary:focus:not(:active),
+.place-order-button.ant-btn-primary.ant-btn-loading:not(:active) {
+  background-color: var(--green) !important;
+  border-color: var(--green) !important;
+  color: white !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.place-order-button.ant-btn-primary.ant-btn-loading::before {
+  opacity: 0 !important;
+}
+
+.place-order-button.ant-btn-primary.ant-btn-loading .ant-btn-loading-icon {
+  color: white !important;
+}
+
+.order-history-container {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 50px 0;
+  width: 100%;
+  background-color: #f0f2f5;
+}
+
+.token-selection-modal .select-token-list-item {
+  cursor: pointer;
+}
+
+.token-selection-modal .token-name {
+  font-size: 25px;
+  margin-right: 10px;
+}
+
+.waiting-modal-title,
+.waiting-modal-footer,
+.waiting-modal-content {
+  text-align: center;
+}
+
+.waiting-modal-content .ant-spin {
+  margin: 50px 0;
+}
+
+/* 移除所有元素的outline */
+.limit-order-card * {
+  outline: none !important;
+}
+
+.limit-order-card *:focus {
+  outline: none !important;
+}

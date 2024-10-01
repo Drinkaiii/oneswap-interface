@@ -1,32 +1,108 @@
-button:focus,
-input:focus {
-  outline: none;
+:root {
+  --red: #ef476f;
+  --red-dark: #d13d63;
+  --background-dark: #052e3b;
 }
 
-.ant-input-group-addon {
-  border: none !important; /* 去除 addon 的邊框 */
-  background: none !important; /* 讓背景透明，與輸入框無分隔 */
-}
-
+/* Global styles */
 html,
 body,
 #root,
-.App {
+.app {
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
-.App {
+.app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* 確保 App 填滿整個視窗高度 */
+  min-height: 100vh;
 }
 
-main {
-  flex-grow: 1; /* 中間內容區域會自動擴展，佔滿可用空間 */
+.app-main {
+  flex-grow: 1;
 }
 
-.AppFooter {
+/* Header styles */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: var(--background-dark);
+  color: white;
+}
+
+/* Menu styles */
+.app-menu {
+  flex-grow: 1;
+}
+
+.app-menu.ant-menu-dark {
+  background-color: var(--background-dark);
+}
+
+.app-menu.ant-menu-dark .ant-menu-item-selected {
+  background-color: var(--red) !important;
+}
+
+.app-menu.ant-menu-dark .ant-menu-item:hover,
+.app-menu.ant-menu-dark .ant-menu-item-active,
+.app-menu.ant-menu-dark .ant-menu-submenu-active,
+.app-menu.ant-menu-dark .ant-menu-submenu-open,
+.app-menu.ant-menu-dark .ant-menu-submenu-selected,
+.app-menu.ant-menu-dark .ant-menu-submenu-title:hover {
+  background-color: var(--red-dark) !important;
+}
+
+.app-menu.ant-menu-dark .ant-menu-item a {
+  color: white;
+}
+
+.app-menu.ant-menu-dark .ant-menu-item-selected a,
+.app-menu.ant-menu-dark .ant-menu-item:hover a {
+  color: white !important;
+}
+
+/* Wallet connect styles */
+.wallet-connect {
+  display: flex;
+  align-items: center;
+}
+
+.wallet-address {
+  color: white;
+  margin-right: 16px;
+}
+
+.connect-button.ant-btn,
+.connect-button.ant-btn-primary {
+  background-color: var(--red);
+  border-color: var(--red);
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.connect-button.ant-btn:hover,
+.connect-button.ant-btn-primary:hover,
+.connect-button.ant-btn:focus,
+.connect-button.ant-btn-primary:focus {
+  background-color: var(--red-dark) !important;
+  border-color: var(--red-dark) !important;
+  color: white !important;
+}
+
+/* Footer styles */
+.app-footer {
   text-align: center;
+  padding: 20px 0;
+  background-color: var(--background-dark);
+  color: white;
+}
+
+.footer-text {
+  margin: 0;
 }
