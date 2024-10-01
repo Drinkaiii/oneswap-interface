@@ -76,18 +76,18 @@ const LimitOrderComponent = () => {
   }, [estimateResponse]);
 
   // listen slippage and caculate minAmountOut
-  useEffect(() => {
-    if (estimateResponse && estimateResponse.data[0].amountOut) {
-      const amountOutEstimate = new BigNumber(estimateResponse.data[0].amountOut);
-      const slippagePercentage = new BigNumber(100).minus(slippage);
-      const calculatedMinAmountOut = amountOutEstimate
-        .times(slippagePercentage)
-        .div(100)
-        .integerValue(BigNumber.ROUND_DOWN);
+  // useEffect(() => {
+  //   if (estimateResponse && estimateResponse.data[0].amountOut) {
+  //     const amountOutEstimate = new BigNumber(estimateResponse.data[0].amountOut);
+  //     const slippagePercentage = new BigNumber(100).minus(slippage);
+  //     const calculatedMinAmountOut = amountOutEstimate
+  //       .times(slippagePercentage)
+  //       .div(100)
+  //       .integerValue(BigNumber.ROUND_DOWN);
   
-      setMinAmountOut(calculatedMinAmountOut);
-    }
-  }, [estimateResponse, slippage]);
+  //     setMinAmountOut(calculatedMinAmountOut);
+  //   }
+  // }, [estimateResponse, slippage]);
   
   // send estimate request by WebSocket
   const sendEstimateRequest = () => {
@@ -160,11 +160,11 @@ const LimitOrderComponent = () => {
   
       // Prepare the transaction parameters
       const amountIn = sellAmount.toFixed(); // Amount user wants to sell
-      const minAmountOutFormatted = minAmountOut.toFixed(); // Correctly reference the state minAmountOut
+      const amountOut = buyAmount.toFixed(); // Correctly reference the state buyAmount
   
       // Call the placeOrder function on the contract
       const tx = await contract.methods
-        .placeOrder(sellToken.address, buyToken.address, amountIn, minAmountOutFormatted) // Use the correct minAmountOut
+        .placeOrder(sellToken.address, buyToken.address, amountIn, amountOut) // Use the correct minAmountOut
         .send({ from: account })
         .on('transactionHash', (hash) => {
           setIsWaitingForTransaction(false); // Close waiting modal
@@ -178,7 +178,7 @@ const LimitOrderComponent = () => {
                 tokenIn: { symbol: sellToken.symbol, decimals: sellToken.decimals },
                 tokenOut: { symbol: buyToken.symbol, decimals: buyToken.decimals },
                 amountIn: amountIn,
-                minAmountOut: minAmountOutFormatted,
+                minAmountOut: amountOut,
                 finalAmountOut: receipt.events.OrderExecuted ? receipt.events.OrderExecuted.returnValues.amountOut : null,
                 status: receipt.events.OrderExecuted ? 'filled' : 'unfilled',
             };
