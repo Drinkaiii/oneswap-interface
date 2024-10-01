@@ -1,7 +1,15 @@
 import React, { useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, Button } from 'antd';
-import { SwapOutlined, DollarOutlined, SafetyOutlined } from '@ant-design/icons';
+import { 
+  SwapOutlined, 
+  DollarOutlined, 
+  SafetyOutlined,
+  SendOutlined,
+  MessageOutlined,
+  GithubOutlined,
+  MailOutlined
+} from '@ant-design/icons';
 import './LandingPage.css';
 
 const tokens = [
@@ -101,7 +109,7 @@ const LandingPage = () => {
         </section>
 
         <section className="testimonial">
-          <h3>What our customers say</h3>
+          <h2>What our customers say</h2>
           <blockquote>
             "Oneswap made trading across different DEXes so much easier. I always get the best rates!"
           </blockquote>
@@ -111,6 +119,31 @@ const LandingPage = () => {
               <p>Jane Doe</p>
               <div className="rating">⭐⭐⭐⭐⭐</div>
             </div>
+          </div>
+        </section>
+
+        <section className="join-community">
+          <h2>Join our community</h2>
+          <div className="community-image">
+            <img src="/community.gif" alt="Join our community" />
+          </div>
+          <div className="social-links">
+            <a href="https://" target="_blank" rel="noopener noreferrer">
+              <img src="/x.png" alt="Twitter" className="social-icon" />
+              <span>Twitter</span>
+            </a>
+            <a href="https://discord.gg/yourserver" target="_blank" rel="noopener noreferrer">
+              <img src="/discord.svg" alt="Discord" className="social-icon" />
+              <span>Discord</span>
+            </a>
+            <a href="https://github.com/yourorganization" target="_blank" rel="noopener noreferrer">
+              <GithubOutlined />
+              <span>GitHub</span>
+            </a>
+            <a href="mailto:contact@yourproject.com">
+              <MailOutlined />
+              <span>Email</span>
+            </a>
           </div>
         </section>
       </main>
