@@ -46,6 +46,7 @@ const LimitOrderComponent = () => {
   const { client, connected, sessionId, estimateResponse } = useWebSocket();
 
   const [latestTransaction, setLatestTransaction] = useState(null);
+  const [cancelledOrders, setCancelledOrders] = useState([]);
   
 
   // fetch user and token data
@@ -239,10 +240,8 @@ const handleCancelOrder = async (orderId) => {
             placement: 'topRight',
           });
           
-          // Optionally, you can update the orderHistory state to reflect the change
-          setOrderHistory((prevHistory) => 
-            prevHistory.map(order => order.orderId === orderId ? { ...order, status: 'cancelled' } : order)
-          );
+          // Add the cancelled order ID to the state
+          setCancelledOrders(prev => [...prev, orderId]);
         })
         .on('error', (error) => {
           console.error("Cancellation Error:", error);
@@ -388,6 +387,7 @@ const handleCancelOrder = async (orderId) => {
           account={account} 
           tokenIcons={tokenIcons} 
           latestTransaction={latestTransaction} 
+          cancelledOrders={cancelledOrders}
           handleCancelOrder={handleCancelOrder}
         />
       </div>

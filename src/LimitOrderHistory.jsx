@@ -8,7 +8,7 @@ const { Title, Text } = Typography;
 
 const host = "https://d1edophfzx4z61.cloudfront.net";
 
-const OrderHistory = ({ account, tokenIcons, latestTransaction, handleCancelOrder }) => {
+const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders , handleCancelOrder }) => {
   const [orderHistory, setOrderHistory] = useState([]); // State to store order history
   const [isLoading, setIsLoading] = useState(false); // State for loading
 
@@ -25,6 +25,15 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, handleCancelOrde
       setOrderHistory((prevHistory) => [latestTransaction, ...prevHistory]);
     }
   }, [latestTransaction]);
+
+  // Listen for cancelled orders
+  useEffect(() => {
+    if (cancelledOrders.length > 0) {
+      setOrderHistory(prevHistory => 
+        prevHistory.map(order => cancelledOrders.includes(order.orderId) ? { ...order, status: 'canceled' } : order)
+      );
+    }
+  }, [cancelledOrders]);
 
   // Function to fetch order history using fetch API
   const fetchOrderHistory = async (address) => {
