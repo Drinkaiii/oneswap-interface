@@ -21,6 +21,22 @@ const availableTokens = [
 // Contract and ABI
 const contractAddress = "0x635D90a6D17d228423385518Ce597300C4fE0260"; // Aggregator Contract
 const contractABI = [{"inputs":[{"internalType":"address","name":"_uniswapRouter","type":"address"},{"internalType":"address","name":"_balancerVault","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"trader","type":"address"},{"indexed":true,"internalType":"address","name":"tokenIn","type":"address"},{"indexed":true,"internalType":"address","name":"tokenOut","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amountOut","type":"uint256"},{"indexed":false,"internalType":"enum DexAggregator.Exchange","name":"exchange","type":"uint8"}],"name":"TradeExecuted","type":"event"},{"inputs":[],"name":"balancerVault","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feePercent","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"address","name":"tokenOut","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"minAmountOut","type":"uint256"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"enum DexAggregator.Exchange","name":"exchange","type":"uint8"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"bytes32","name":"poolId","type":"bytes32"}],"name":"swapTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"uniswapRouter","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newFeePercent","type":"uint256"}],"name":"updateFeePercent","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+const erc20ABI = [
+  {
+    constant: true,
+    inputs: [{ name: "_owner", type: "address" }, { name: "_spender", type: "address" }],
+    name: "allowance",
+    outputs: [{ name: "", type: "uint256" }],
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [{ name: "_spender", type: "address" }, { name: "_value", type: "uint256" }],
+    name: "approve",
+    outputs: [{ name: "", type: "bool" }],
+    type: "function",
+  }
+];
 
 const SwapComponent = () => {
 
@@ -45,6 +61,8 @@ const SwapComponent = () => {
   const { client, connected, sessionId, estimateResponse } = useWebSocket();
 
   const [latestTransaction, setLatestTransaction] = useState(null);
+
+  const [isApprovalNeeded, setIsApprovalNeeded] = useState(false);
 
   // fetch user and token data
   useEffect(() => {
@@ -86,11 +104,110 @@ const SwapComponent = () => {
       setMinAmountOut(calculatedMinAmountOut);
     }
   }, [estimateResponse, slippage]);
+
+  // Check approval when sellAmount or sellToken changes
+  useEffect(() => {
+    
+    if (account && web3 && sellAmount && sellAmount.gt(0)) {
+      checkApprovalNeeded(sellToken.address, contractAddress, sellAmount)
+      .then((approvalNeeded) => {
+        setIsApprovalNeeded(approvalNeeded);
+      })
+      .catch((error) => {
+        console.error("Error checking approval:", error);
+      });
+    }
+  }, [account, web3, sellAmount, sellToken]);
   
   // handle slippage change
   const handleSlippageChange = (value) => {
     setSlippage(value);
   };
+
+  // check if approval is needed
+  const checkApprovalNeeded = async (tokenAddress, spender, amount) => {
+    const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
+    const allowance = await tokenContract.methods.allowance(account, spender).call();
+    const result = new BigNumber(allowance).lt(new BigNumber(amount));
+    return result;
+  };
+
+  // executeApproval function
+  const executeApproval = async (tokenAddress, spender, amount) => {
+    const needsApproval = await checkApprovalNeeded(tokenAddress, spender, amount);
+    if (needsApproval) {
+      const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
+      try {
+        const amountToApprove = new BigNumber(amount).toFixed(); // Convert BigNumber to string (without scientific notation)
+        
+        const promiEvent = tokenContract.methods.approve(spender, amountToApprove).send({ from: account });
+  
+        promiEvent.on('transactionHash', (hash) => {
+          setIsWaitingForTransaction(false);
+          const etherscanUrl = `https://sepolia.etherscan.io/tx/${hash}`;
+          notification.success({
+            message: 'Approval Transaction Sent',
+            description: (
+              <Button
+                type="link"
+                href={etherscanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View on Etherscan
+              </Button>
+            ),
+            placement: 'topRight',
+          });
+        });
+  
+        promiEvent.on('receipt', (receipt) => {
+          setIsWaitingForTransaction(false);
+          setIsApprovalNeeded(false);
+          const etherscanUrl = `https://sepolia.etherscan.io/tx/${receipt.transactionHash}`;
+          notification.success({
+            message: 'Approval Confirmed',
+            description: (
+              <Button
+                type="link"
+                href={etherscanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View on Etherscan
+              </Button>
+            ),
+            placement: 'topRight',
+          });
+        });
+  
+        promiEvent.on('error', (error) => {
+          setIsWaitingForTransaction(false);
+          console.error("Approval transaction failed or was canceled (event):", error);
+          notification.error({
+            message: 'Approval Failed or Canceled',
+            description: error.message,
+            placement: 'topRight',
+          });
+        });
+  
+        await promiEvent; // Wait for transaction to be mined or fail
+        return true; // Approval was needed and successfully completed
+      } catch (error) {
+        // This catch block handles errors thrown during the send() call
+        console.error("Error during approval transaction:", error);
+        setIsWaitingForTransaction(false);
+        notification.error({
+          message: 'Approval Failed or Canceled',
+          description: error.message,
+          placement: 'topRight',
+        });
+        throw error; // Re-throw the error to be handled by the calling function
+      }
+    }
+    return false; // No approval was needed
+  };
+  
   
   // send estimate request by WebSocket
   const sendEstimateRequest = () => {
@@ -146,7 +263,12 @@ const SwapComponent = () => {
       return;
     }
 
-    setIsWaitingForTransaction(true); // Show waiting modal
+    // Show waiting modal
+    setIsWaitingForTransaction(true);
+
+    // check and ensure approval
+    if (checkApprovalNeeded)
+      await executeApproval(sellToken.address, contractAddress, sellAmount.toString());
 
     try {
   
@@ -359,7 +481,7 @@ const SwapComponent = () => {
         )}
 
         <Button className="swap-button ant-btn ant-btn-primary" type="primary" onClick={handleSwap} icon={<SwapOutlined />}>
-          Swap
+          {isApprovalNeeded ? 'Approve Required' : 'Swap'}
         </Button>
       </div>
       

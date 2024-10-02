@@ -21,6 +21,22 @@ const availableTokens = [
 // Contract and ABI
 const contractAddress = "0x08dfC836a3343618ffB412FFaDF3B882cB98852b"; // New Order Contract
 const contractABI = [{"inputs":[{"internalType":"address","name":"_dexAggregator","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"}],"name":"OrderCancelled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountOut","type":"uint256"}],"name":"OrderExecuted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"orderId","type":"uint256"},{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"address","name":"tokenIn","type":"address"},{"indexed":false,"internalType":"address","name":"tokenOut","type":"address"},{"indexed":false,"internalType":"uint256","name":"amountIn","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"minAmountOut","type":"uint256"}],"name":"OrderPlaced","type":"event"},{"inputs":[{"internalType":"uint256","name":"orderId","type":"uint256"}],"name":"cancelOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"dexAggregator","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"orderId","type":"uint256"},{"internalType":"address[]","name":"path","type":"address[]"},{"internalType":"uint8","name":"exchange","type":"uint8"},{"internalType":"bytes32","name":"poolId","type":"bytes32"}],"name":"executeOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"nextOrderId","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"tokenIn","type":"address"},{"internalType":"address","name":"tokenOut","type":"address"},{"internalType":"uint256","name":"amountIn","type":"uint256"},{"internalType":"uint256","name":"minAmountOut","type":"uint256"}],"name":"placeOrder","outputs":[{"internalType":"uint256","name":"orderId","type":"uint256"}],"stateMutability":"nonpayable","type":"function"}];
+const erc20ABI = [
+  {
+    constant: true,
+    inputs: [{ name: "_owner", type: "address" }, { name: "_spender", type: "address" }],
+    name: "allowance",
+    outputs: [{ name: "", type: "uint256" }],
+    type: "function",
+  },
+  {
+    constant: false,
+    inputs: [{ name: "_spender", type: "address" }, { name: "_value", type: "uint256" }],
+    name: "approve",
+    outputs: [{ name: "", type: "bool" }],
+    type: "function",
+  }
+];
 
 const LimitOrderComponent = () => {
 
@@ -47,6 +63,7 @@ const LimitOrderComponent = () => {
 
   const [latestTransaction, setLatestTransaction] = useState(null);
   const [cancelledOrders, setCancelledOrders] = useState([]);
+  const [isApprovalNeeded, setIsApprovalNeeded] = useState(false);
   
 
   // fetch user and token data
@@ -76,19 +93,19 @@ const LimitOrderComponent = () => {
     }
   }, [estimateResponse]);
 
-  // listen slippage and caculate minAmountOut
-  // useEffect(() => {
-  //   if (estimateResponse && estimateResponse.data[0].amountOut) {
-  //     const amountOutEstimate = new BigNumber(estimateResponse.data[0].amountOut);
-  //     const slippagePercentage = new BigNumber(100).minus(slippage);
-  //     const calculatedMinAmountOut = amountOutEstimate
-  //       .times(slippagePercentage)
-  //       .div(100)
-  //       .integerValue(BigNumber.ROUND_DOWN);
-  
-  //     setMinAmountOut(calculatedMinAmountOut);
-  //   }
-  // }, [estimateResponse, slippage]);
+  // Check approval when sellAmount or sellToken changes
+  useEffect(() => {
+    
+    if (account && web3 && sellAmount && sellAmount.gt(0)) {
+      checkApprovalNeeded(sellToken.address, contractAddress, sellAmount)
+      .then((approvalNeeded) => {
+        setIsApprovalNeeded(approvalNeeded);
+      })
+      .catch((error) => {
+        console.error("Error checking approval:", error);
+      });
+    }
+  }, [account, web3, sellAmount, sellToken]);
   
   // send estimate request by WebSocket
   const sendEstimateRequest = () => {
@@ -152,8 +169,14 @@ const LimitOrderComponent = () => {
         });
         return;
       }
-  
-    setIsWaitingForTransaction(true); // Show waiting modal
+
+    // Show waiting modal
+    setIsWaitingForTransaction(true);
+
+    // check and ensure approval
+    if (checkApprovalNeeded)
+      await executeApproval(sellToken.address, contractAddress, sellAmount.toString());
+
   
     try {
       // Initialize the contract
@@ -264,6 +287,90 @@ const handleCancelOrder = async (orderId) => {
     const tokenBalance = toNormalUnit(tokenData.balance, tokenData.decimals); 
     return tokenBalance;
   };
+
+  // check if approval is needed
+  const checkApprovalNeeded = async (tokenAddress, spender, amount) => {
+    const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
+    const allowance = await tokenContract.methods.allowance(account, spender).call();
+    const result = new BigNumber(allowance).lt(new BigNumber(amount));
+    return result;
+  };
+
+  // executeApproval function
+  const executeApproval = async (tokenAddress, spender, amount) => {
+    const needsApproval = await checkApprovalNeeded(tokenAddress, spender, amount);
+    if (needsApproval) {
+      const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
+      try {
+        const amountToApprove = new BigNumber(amount).toFixed(); // Convert BigNumber to string (without scientific notation)
+        
+        const promiEvent = tokenContract.methods.approve(spender, amountToApprove).send({ from: account });
+  
+        promiEvent.on('transactionHash', (hash) => {
+          setIsWaitingForTransaction(false);
+          const etherscanUrl = `https://sepolia.etherscan.io/tx/${hash}`;
+          notification.success({
+            message: 'Approval Transaction Sent',
+            description: (
+              <Button
+                type="link"
+                href={etherscanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View on Etherscan
+              </Button>
+            ),
+            placement: 'topRight',
+          });
+        });
+  
+        promiEvent.on('receipt', (receipt) => {
+          setIsWaitingForTransaction(false);
+          setIsApprovalNeeded(false);
+          const etherscanUrl = `https://sepolia.etherscan.io/tx/${receipt.transactionHash}`;
+          notification.success({
+            message: 'Approval Confirmed',
+            description: (
+              <Button
+                type="link"
+                href={etherscanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View on Etherscan
+              </Button>
+            ),
+            placement: 'topRight',
+          });
+        });
+  
+        promiEvent.on('error', (error) => {
+          setIsWaitingForTransaction(false);
+          console.error("Approval transaction failed or was canceled (event):", error);
+          notification.error({
+            message: 'Approval Failed or Canceled',
+            description: error.message,
+            placement: 'topRight',
+          });
+        });
+  
+        await promiEvent; // Wait for transaction to be mined or fail
+        return true; // Approval was needed and successfully completed
+      } catch (error) {
+        // This catch block handles errors thrown during the send() call
+        console.error("Error during approval transaction:", error);
+        setIsWaitingForTransaction(false);
+        notification.error({
+          message: 'Approval Failed or Canceled',
+          description: error.message,
+          placement: 'topRight',
+        });
+        throw error; // Re-throw the error to be handled by the calling function
+      }
+    }
+    return false; // No approval was needed
+  };  
 
   return (
     <div className="limit-order-container">
@@ -377,7 +484,7 @@ const handleCancelOrder = async (orderId) => {
           onClick={handlePlaceOrder} 
           icon={<SwapOutlined />}
         >
-          Place Order
+          {isApprovalNeeded ? 'Approve Required' : 'Place Order'}
         </Button>
       </div>
 
