@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification  } from 'antd';
-import { SwapOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification, Tooltip } from 'antd';
+import { SwapOutlined, LoadingOutlined, BarChartOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
+import ExchangeRateCardList from './ExchangeRateCardList';
 import TransactionHistory from './TransactionHistory';
 import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toSmallestUnit } from './utils';
 import './SwapComponent.css';
@@ -63,6 +64,8 @@ const SwapComponent = () => {
   const [latestTransaction, setLatestTransaction] = useState(null);
 
   const [isApprovalNeeded, setIsApprovalNeeded] = useState(false);
+  const [isExchangeRateModalVisible, setIsExchangeRateModalVisible] = useState(false);
+  const [selectedExchangeIndex, setSelectedExchangeIndex] = useState(0);
 
   // fetch user and token data
   useEffect(() => {
@@ -87,14 +90,22 @@ const SwapComponent = () => {
   // listen estimateResponse change and handle response
   useEffect(() => {
     if (estimateResponse) {
+      setSelectedExchangeIndex(0); // Reset to default (best) exchange
       handleEstimateResponse(estimateResponse);
     }
   }, [estimateResponse]);
 
+  // listen estimateResponse order change by changing path
+  useEffect(() => {
+    if (estimateResponse) {
+      handleEstimateResponse(estimateResponse);
+    }
+  }, [selectedExchangeIndex]);
+
   // listen slippage and caculate minAmountOut
   useEffect(() => {
-    if (estimateResponse && estimateResponse.data[0].amountOut) {
-      const amountOutEstimate = new BigNumber(estimateResponse.data[0].amountOut);
+    if (estimateResponse && estimateResponse.data[selectedExchangeIndex].amountOut) {
+      const amountOutEstimate = new BigNumber(estimateResponse.data[selectedExchangeIndex].amountOut);
       const slippagePercentage = new BigNumber(100).minus(slippage);
       const calculatedMinAmountOut = amountOutEstimate
         .times(slippagePercentage)
@@ -103,7 +114,7 @@ const SwapComponent = () => {
   
       setMinAmountOut(calculatedMinAmountOut);
     }
-  }, [estimateResponse, slippage]);
+  }, [estimateResponse, slippage, selectedExchangeIndex]);
 
   // Check approval when sellAmount or sellToken changes
   useEffect(() => {
@@ -225,8 +236,9 @@ const SwapComponent = () => {
 
   // handle response from WebSocket
   const handleEstimateResponse = (data) => {
+    console.log(data);
     if (data.type === 'estimate' && data.status === 'success') {
-      const estimateResponse = data.data[0];
+      const estimateResponse = data.data[selectedExchangeIndex];
       const decimalsOut = estimateResponse.liquidity.decimals1; //doto
       setBuyAmount(new BigNumber(estimateResponse.amountOut));
     } else {
@@ -277,8 +289,8 @@ const SwapComponent = () => {
   
       // prepare the parameters
       const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
-      const exchanger = estimateResponse.data[0].liquidity.exchanger === "Uniswap" ? 0 : 1;
-      const poolId = estimateResponse.data[0].liquidity.poolId !== null ? estimateResponse.data[0].liquidity.poolId : "0xc1e0942d3babe2ce30a78d0702a8b5ace651505400020000000000000000014d"; //default is WETH/WBTC poolId
+      const exchanger = estimateResponse.data[selectedExchangeIndex].liquidity.exchanger === "Uniswap" ? 0 : 1;
+      const poolId = estimateResponse.data[selectedExchangeIndex].liquidity.poolId !== null ? estimateResponse.data[selectedExchangeIndex].liquidity.poolId : "0xc1e0942d3babe2ce30a78d0702a8b5ace651505400020000000000000000014d"; //default is WETH/WBTC poolId
 
       // constract transaction
       const transactionParameters = {
@@ -392,6 +404,19 @@ const SwapComponent = () => {
     return tokenBalance;
   };
 
+  const showExchangeRateModal = () => {
+    setIsExchangeRateModalVisible(true);
+  };
+
+  const handleExchangeRateModalCancel = () => {
+    setIsExchangeRateModalVisible(false);
+  };
+
+  const handleExchangeSelect = (index) => {
+    setSelectedExchangeIndex(index);
+    setIsExchangeRateModalVisible(false);
+  };
+
   return (
     <div className="swap-container">
       <div className="swap-card">
@@ -475,7 +500,16 @@ const SwapComponent = () => {
 
         {estimateResponse && (
           <div className="estimate-info">
-            <Text className="estimate-text">Best Exchange: {estimateResponse.data[0].liquidity.exchanger}</Text>
+            <div className="estimate-row">
+              <Text className="estimate-text">{selectedExchangeIndex===0?'Best Exchange':'Exchange'}: {estimateResponse.data[selectedExchangeIndex].liquidity.exchanger}</Text>
+              <Tooltip title="View Other Exchange Rates">
+                <Button 
+                  className="exchange-rate-icon-button"
+                  onClick={showExchangeRateModal}
+                  icon={<BarChartOutlined />}
+                />
+              </Tooltip>
+            </div>
             <Text className="estimate-text">Min Amount Get: {toNormalUnit(minAmountOut,18)}</Text>
           </div>
         )}
@@ -485,6 +519,7 @@ const SwapComponent = () => {
         </Button>
       </div>
       
+      {/* show transaction history */}
       <div className="transaction-history-container">
         <TransactionHistory account={account} tokenIcons={tokenIcons} latestTransaction={latestTransaction} />
       </div>
@@ -533,6 +568,20 @@ const SwapComponent = () => {
           <Spin indicator={<LoadingOutlined style={{ fontSize: 70 }} spin />} />
           <p>Please sign the transaction in your wallet...</p>
         </div>
+      </Modal>
+      {/* Exchange Rate Modal */}
+      <Modal
+        title="Othert Exchange Rates"
+        open={isExchangeRateModalVisible}
+        onCancel={handleExchangeRateModalCancel}
+        footer={null}
+        width={600}
+      >
+        <ExchangeRateCardList 
+          estimateResponse={estimateResponse} 
+          onSelectExchange={handleExchangeSelect}
+          selectedIndex={selectedExchangeIndex}
+        />
       </Modal>
     </div>
   );

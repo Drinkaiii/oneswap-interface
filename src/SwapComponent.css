@@ -213,3 +213,45 @@
 .slippage-control .ant-slider-handle::after {
   box-shadow: 0 0 0 2px var(--green) !important;
 }
+
+.exchange-rate-card-list-container {
+  margin-top: 20px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ant-modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* ... other exchanger button ... */
+
+.estimate-info {
+  margin-bottom: 15px;
+}
+
+.estimate-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.estimate-text {
+  display: block;
+}
+
+.exchange-rate-icon-button {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.45);
+  transition: color 0.3s;
+}
+
+.exchange-rate-icon-button:hover {
+  color: #ef476f;
+}
