@@ -229,26 +229,31 @@
   transform: translate(-50%, -50%);
   width: 32px;
   height: 32px;
-  background-color: var(--green);
-  border: none;
+  background-color: var(--green) !important;
+  border: none !important;
   border-radius: 20%;
   margin: -16px 0px -32px 0;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.1s ease, transform 0.1s ease !important;
   z-index: 10;
 }
 
 .swap-tokens-button:hover,
 .swap-tokens-button:focus {
-  background-color: var(--green) !important;
+  background-color: var(--green-dark) !important;
 }
 
 .swap-tokens-button:active {
   background-color: var(--green-dark) !important;
-  transform: translate(-50%, -50%) scale(0.9);
+  transform: translate(-50%, -50%) scale(0.9) !important;
+}
+
+.swap-tokens-button:not(:active) {
+  background-color: var(--green) !important;
+  transform: translate(-50%, -50%) !important;
 }
 
 .swap-tokens-button .anticon {
