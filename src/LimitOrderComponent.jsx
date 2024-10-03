@@ -160,7 +160,7 @@ const LimitOrderComponent = () => {
 
   // place order function
   const handlePlaceOrder = async () => {
-    
+
     if (!account){
         // Show an error notification
         notification.error({
@@ -256,6 +256,9 @@ const handleCancelOrder = async (orderId) => {
       });
       return;
     }
+
+    // Show waiting modal
+    setIsWaitingForTransaction(true);
   
     try {
       // Initialize contract
@@ -265,9 +268,11 @@ const handleCancelOrder = async (orderId) => {
       await contract.methods.cancelOrder(orderId).send({ from: account })
         .on('transactionHash', (hash) => {
           console.log("Transaction hash for cancellation:", hash);
+          setIsWaitingForTransaction(false);
         })
         .on('receipt', (receipt) => {
           console.log("Order cancellation successful!", receipt);
+          setIsWaitingForTransaction(false);
           notification.success({
             message: 'Order Cancelled',
             description: `Order ${orderId} has been successfully cancelled.`,
@@ -279,6 +284,7 @@ const handleCancelOrder = async (orderId) => {
         })
         .on('error', (error) => {
           console.error("Cancellation Error:", error);
+          setIsWaitingForTransaction(false);
           notification.error({
             message: 'Cancellation Failed',
             description: `Failed to cancel order ${orderId}. Please try again.`,
@@ -287,6 +293,7 @@ const handleCancelOrder = async (orderId) => {
         });
     } catch (error) {
       console.error("Error while cancelling order:", error);
+      setIsWaitingForTransaction(false);
     }
   };  
 

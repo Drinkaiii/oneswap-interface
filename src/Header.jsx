@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Layout, Menu, Button, Modal, notification, Space, Typography, Tooltip } from 'antd';
-import { CopyOutlined, LinkOutlined } from '@ant-design/icons';
+import { Layout, Menu, Button, Modal, notification, Space, Typography, Tooltip, Spin } from 'antd';
+import { CopyOutlined, LoadingOutlined, LinkOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { WalletContext } from './WalletProvider';
 
@@ -11,6 +11,7 @@ const AppHeader = () => {
   const { account, connectWallet, disconnectWallet, switchWallet, errorMessage } = useContext(WalletContext);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const walletButtonRef = useRef(null);
+  const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
 
   useEffect(() => {
     if (errorMessage) {
@@ -38,13 +39,23 @@ const AppHeader = () => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
+  const handleConnect = async () => {
+    setIsModalVisible(false);
+    setIsWaitingForTransaction(true);
+    await connectWallet();
+    setIsWaitingForTransaction(false);
+  }
+
   const handleDisconnect = () => {
     disconnectWallet();
     setIsModalVisible(false);
   };
 
   const handleSwitchWallet = async () => {
+    setIsModalVisible(false);
+    setIsWaitingForTransaction(true);
     await switchWallet();
+    setIsWaitingForTransaction(false);
     setIsModalVisible(false);
   };
 
@@ -129,12 +140,36 @@ const AppHeader = () => {
           <Button 
             className="connect-button" 
             type="primary" 
-            onClick={connectWallet}
+            onClick={handleConnect}
           >
             Connect Wallet
           </Button>
         )}
       </div>
+      {/* Waiting Modal */}
+      <Modal
+        title={
+          <div className="waiting-modal-title">
+            Waiting for Connect Wallet
+          </div>
+        }
+        open={isWaitingForTransaction}
+        footer={
+          <div className="waiting-modal-footer">
+            <Button type="text" onClick={() => setIsWaitingForTransaction(false)}>
+              Close Window
+            </Button>
+          </div>
+        }
+        closable={false}
+        centered
+        className="waiting-modal"
+      >
+        <div className="waiting-modal-content">
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 }} spin />} />
+          <p>Please confirm the connection in your wallet...</p>
+        </div>
+      </Modal>
     </Header>
   );
 };
