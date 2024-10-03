@@ -76,7 +76,7 @@ const LimitOrderComponent = () => {
     if (account)
       fetchAccountBalances(account, setBalances); // fetch account info again if account change
     else
-      console.log("No wallet connected");
+      setBalances({});
   }, [account]);
 
   // listen sellAmount change: if sellAmount change, resend the request

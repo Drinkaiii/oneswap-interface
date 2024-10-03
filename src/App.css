@@ -1,7 +1,14 @@
 :root {
   --red: #ef476f;
   --red-dark: #d13d63;
-  --background-dark: #052e3b;
+  --yellow: #ffd166;
+  --yellow-dark: #ffc233;
+  --green: #06d6a0;
+  --green-dark: #05b185;
+  --blue: #118ab2;
+  --blue-dark: #0e7494;
+  --dark-blue: #073b4c;
+  --dark-blue-darker: #052e3b;
 }
 
 /* Global styles */
@@ -30,7 +37,7 @@ body,
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
-  background-color: var(--background-dark);
+  background-color: var(--dark-blue-darker);
   color: white;
 }
 
@@ -40,7 +47,7 @@ body,
 }
 
 .app-menu.ant-menu-dark {
-  background-color: var(--background-dark);
+  background-color: var(--dark-blue-darker);
 }
 
 .app-menu.ant-menu-dark .ant-menu-item-selected {
@@ -95,14 +102,151 @@ body,
   color: white !important;
 }
 
+.disconnect-button.ant-btn {
+  background-color: transparent;
+  border-color: var(--red);
+  color: var(--red);
+  margin-left: 16px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.disconnect-button.ant-btn:hover,
+.disconnect-button.ant-btn:focus {
+  background-color: var(--red);
+  color: white;
+}
+
+.wallet-address-button.ant-btn {
+  background-color: var(--dark-blue-darker);
+  border-color: var(--red);
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.wallet-address-button.ant-btn:hover {
+  background-color: var(--red-dark) !important;
+  border-color: var(--red-dark) !important;
+  color: white !important;
+}
+
 /* Footer styles */
 .app-footer {
   text-align: center;
   padding: 20px 0;
-  background-color: var(--background-dark);
+  background-color: var(--dark-blue-darker);
   color: white;
 }
 
 .footer-text {
   margin: 0;
+}
+
+.wallet-address-button.ant-btn,
+.connect-button.ant-btn {
+  display: flex;
+  align-items: center;
+  background-color: var(--dark-blue-darker);
+  border-color: var(--red);
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.wallet-address-button.ant-btn .metamask-logo,
+.connect-button.ant-btn .metamask-logo {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
+.wallet-address-button.ant-btn:hover,
+.connect-button.ant-btn:hover {
+  background-color: var(--red-dark);
+  border-color: var(--red-dark);
+  color: white;
+}
+
+.wallet-address-button.ant-btn:focus,
+.connect-button.ant-btn:focus {
+  background-color: var(--dark-blue-darker);
+  border-color: var(--red);
+  color: white;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(239, 71, 111, 0.2);
+}
+
+.wallet-address-button.ant-btn:hover:focus,
+.connect-button.ant-btn:hover:focus {
+  background-color: var(--red-dark);
+  border-color: var(--red-dark);
+  color: white;
+}
+
+/* ... account information Modal ... */
+
+.switch-wallet-button.ant-btn {
+  background-color: var(--green);
+  border-color: var(--green);
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.switch-wallet-button.ant-btn:hover,
+.switch-wallet-button.ant-btn:focus {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+}
+
+.disconnect-wallet-button.ant-btn {
+  background-color: var(--red);
+  border-color: var(--red);
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.disconnect-wallet-button.ant-btn:hover,
+.disconnect-wallet-button.ant-btn:focus {
+  background-color: var(--red-dark) !important;
+  border-color: var(--red-dark) !important;
+  color: white !important;
+}
+
+/* Wallet Modal styles */
+.wallet-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.wallet-info {
+  margin-bottom: 24px;
+}
+
+.wallet-address {
+  word-break: break-all;
+  color: var(--dark-blue-darker);
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.copy-button {
+  padding: 4px 8px;
+  margin-left: 8px;
+}
+
+.etherscan-button.ant-btn {
+  background-color: var(--blue);
+  border-color: var(--blue);
+  color: white;
 }
