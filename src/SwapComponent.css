@@ -1,3 +1,16 @@
+:root {
+  --red: #ef476f;
+  --red-dark: #d13d63; /* 新增：更深的红色 */
+  --yellow: #ffd166;
+  --yellow-dark: #ffc233; /* 新增：更深的黄色 */
+  --green: #06d6a0;
+  --green-dark: #05b185; /* 新增：更深的绿色 */
+  --blue: #118ab2;
+  --blue-dark: #0e7494; /* 新增：更深的蓝色 */
+  --dark-blue: #073b4c;
+  --dark-blue-darker: #052e3b; /* 新增：更深的深蓝色 */
+}
+
 .swap-container {
   display: flex;
   flex-direction: column;
@@ -254,4 +267,38 @@
 
 .exchange-rate-icon-button:hover {
   color: #ef476f;
+}
+
+/* swithc token button */
+
+.swap-tokens-button {
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  background-color: var(--green);
+  border: none;
+  border-radius: 20%;
+  margin: -16px 0px -32px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  z-index: 10;
+}
+
+.swap-tokens-button:hover,
+.swap-tokens-button:focus {
+  background-color: var(--green) !important;
+}
+
+.swap-tokens-button:active {
+  background-color: var(--green-dark) !important;
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+.swap-tokens-button .anticon {
+  color: white;
+  font-size: 16px;
 }

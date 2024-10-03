@@ -221,3 +221,37 @@
 .limit-order-card *:focus {
   outline: none !important;
 }
+
+/* swithc token button */
+
+.swap-tokens-button {
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  background-color: var(--green);
+  border: none;
+  border-radius: 20%;
+  margin: -16px 0px -32px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  z-index: 10;
+}
+
+.swap-tokens-button:hover,
+.swap-tokens-button:focus {
+  background-color: var(--green) !important;
+}
+
+.swap-tokens-button:active {
+  background-color: var(--green-dark) !important;
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+.swap-tokens-button .anticon {
+  color: white;
+  font-size: 16px;
+}

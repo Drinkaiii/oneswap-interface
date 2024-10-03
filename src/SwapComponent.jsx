@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification, Tooltip } from 'antd';
-import { SwapOutlined, LoadingOutlined, BarChartOutlined } from '@ant-design/icons';
+import { SwapOutlined, LoadingOutlined, BarChartOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
@@ -417,6 +417,25 @@ const SwapComponent = () => {
     setIsExchangeRateModalVisible(false);
   };
 
+  const handleSwapTokens = () => {
+    
+    // exchange token
+    const tempToken = sellToken;
+    setSellToken(buyToken);
+    setBuyToken(tempToken);
+  
+    // switch the amount
+    // const tempAmount = sellAmount;
+    // setSellAmount(buyAmount);
+    // setBuyAmount(tempAmount);
+    // setEffectAmount(buyAmount);
+  
+    // get new estimate response
+    if (buyAmount.gt(0)) {
+      sendEstimateRequest();
+    }
+  };
+
   return (
     <div className="swap-container">
       <div className="swap-card">
@@ -455,6 +474,13 @@ const SwapComponent = () => {
           </div>
           <Text className="balance-text">Balance: {getBalanceForToken(sellToken.address)}</Text>
         </Card>
+
+        {/* Switch button */}
+        <Button
+          className="swap-tokens-button"
+          icon={<ArrowDownOutlined />}
+          onClick={handleSwapTokens}
+        />
 
         {/* Buy Token Area */}
         <Card className="token-card buy-token">
