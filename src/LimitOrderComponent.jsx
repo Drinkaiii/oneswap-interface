@@ -160,6 +160,7 @@ const LimitOrderComponent = () => {
 
   // place order function
   const handlePlaceOrder = async () => {
+    
     if (!account){
         // Show an error notification
         notification.error({
@@ -169,6 +170,16 @@ const LimitOrderComponent = () => {
         });
         return;
       }
+
+    // Input validation
+    if (!sellAmount || sellAmount.isNaN() || sellAmount.lte(0)) {
+      notification.error({
+        message: 'Invalid Input',
+        description: 'Please enter a valid positive number for the amount to sell.',
+        placement: 'topRight'
+      });
+      return;
+    }
 
     // Show waiting modal
     setIsWaitingForTransaction(true);
