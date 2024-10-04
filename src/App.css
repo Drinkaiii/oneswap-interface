@@ -41,6 +41,11 @@ body,
   color: white;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
 /* Menu styles */
 .app-menu {
   flex-grow: 1;
@@ -70,6 +75,37 @@ body,
 .app-menu.ant-menu-dark .ant-menu-item-selected a,
 .app-menu.ant-menu-dark .ant-menu-item:hover a {
   color: white !important;
+}
+
+/* Gas price styles */
+.gas-price {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.gas-price-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.gas-price-indicator.green {
+  background-color: var(--green);
+}
+
+.gas-price-indicator.yellow {
+  background-color: var(--yellow);
+}
+
+.gas-price-indicator.red {
+  background-color: var(--red);
+}
+
+.gas-price-text {
+  color: white;
+  font-weight: bold;
 }
 
 /* Wallet connect styles */

@@ -10,10 +10,15 @@ export const useWebSocket = () => useContext(WebSocketContext);
 const host = "https://d1edophfzx4z61.cloudfront.net";
 
 export const WebSocketProvider = ({ children }) => {
+
+  // WebSocket
   const [client, setClient] = useState(null);
   const [connected, setConnected] = useState(false);
   const [sessionId, setSessionId] = useState(null);
-  const [estimateResponse, setEstimateResponse] = useState(null); // data
+  
+  // data
+  const [estimateResponse, setEstimateResponse] = useState(null);
+  const [gasPrice, setGasPrice] = useState(null);
 
   useEffect(() => {
     // initialize STOMP client
@@ -34,10 +39,17 @@ export const WebSocketProvider = ({ children }) => {
       const url = socket._transport.url;
       const sessionId = url.split("/")[5].split("?")[0];
       
-      // subscribe WebSocket channel
+      // subscribe estimate channel
       stompClient.subscribe(`/queue/estimate/${sessionId}`, (message) => {
         const body = JSON.parse(message.body);
         setEstimateResponse(body);
+      });
+
+      // subscribe gas channel
+      stompClient.subscribe('/queue/gas/Sepolia', (message) => {
+        const body = JSON.parse(message.body);
+        setGasPrice(body.data);
+        console.log('Current gas price:', body.data.toString());
       });
 
       // update sessionId and client
@@ -64,7 +76,7 @@ export const WebSocketProvider = ({ children }) => {
   }, []);
 
   return (
-    <WebSocketContext.Provider value={{ client, connected, sessionId, estimateResponse }}>
+    <WebSocketContext.Provider value={{ client, connected, sessionId, estimateResponse, gasPrice }}>
       {children}
     </WebSocketContext.Provider>
   );

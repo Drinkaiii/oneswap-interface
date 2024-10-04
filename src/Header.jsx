@@ -3,12 +3,17 @@ import { Layout, Menu, Button, Modal, notification, Space, Typography, Tooltip, 
 import { CopyOutlined, LoadingOutlined, LinkOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { WalletContext } from './WalletProvider';
+import { useWebSocket } from './WebSocketProvider';
+import Web3 from 'web3';
 
 const { Header } = Layout;
 const { Paragraph } = Typography;
 
 const AppHeader = () => {
   const { account, connectWallet, disconnectWallet, switchWallet, errorMessage } = useContext(WalletContext);
+  const { gasPrice } = useWebSocket();
+  const [formattedGasPrice, setFormattedGasPrice] = useState();
+  const [gasPriceColor, setGasPriceColor] = useState('green');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const walletButtonRef = useRef(null);
   const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
@@ -28,6 +33,24 @@ const AppHeader = () => {
       walletButtonRef.current.blur();
     }
   }, [account]);
+
+  useEffect(() => {
+    if (gasPrice) {
+      const formattedPrice = formatGasPrice(gasPrice);
+      setFormattedGasPrice(formattedPrice);
+      
+      const numericPrice = parseFloat(formattedPrice);
+      if (numericPrice < 30) {
+        setGasPriceColor('green');
+      } else if (numericPrice >= 30 && numericPrice <= 70) {
+        setGasPriceColor('yellow');
+      } else {
+        setGasPriceColor('red');
+      }
+    } else {
+      setFormattedGasPrice(undefined);
+    }
+  }, [gasPrice]);
 
   const menuItems = [
     { key: '1', label: <Link to="/swap">Swap</Link> },
@@ -66,6 +89,13 @@ const AppHeader = () => {
       description: 'The wallet address has been copied to your clipboard.',
       placement: 'topRight',
     });
+  };
+
+  const formatGasPrice = (price) => {
+    if (!price) return;
+    const web3 = new Web3();
+    const gweiPrice = web3.utils.fromWei(price.toString(), 'gwei');
+    return parseFloat(gweiPrice).toFixed(2);
   };
 
   const WalletModal = () => {
@@ -123,28 +153,36 @@ const AppHeader = () => {
         defaultSelectedKeys={['1']} 
         items={menuItems}
       />
-      <div className="wallet-connect">
-        {account ? (
-          <>
-            <Button 
-              ref={walletButtonRef}
-              className="wallet-address-button" 
-              onClick={() => setIsModalVisible(true)}
-              icon={<img src="/MetaMask_logo.svg" alt="MetaMask" className="metamask-logo" />}
-            >
-              {shortenAddress(account)}
-            </Button>
-            <WalletModal />
-          </>
-        ) : (
-          <Button 
-            className="connect-button" 
-            type="primary" 
-            onClick={handleConnect}
-          >
-            Connect Wallet
-          </Button>
+      <div className="header-right">
+        {formattedGasPrice && (
+          <div className="gas-price">
+            <span className={`gas-price-indicator ${gasPriceColor}`}></span>
+            <span className="gas-price-text">{formattedGasPrice} Gwei</span>
+          </div>
         )}
+        <div className="wallet-connect">
+          {account ? (
+            <>
+              <Button 
+                ref={walletButtonRef}
+                className="wallet-address-button" 
+                onClick={() => setIsModalVisible(true)}
+                icon={<img src="/MetaMask_logo.svg" alt="MetaMask" className="metamask-logo" />}
+              >
+                {shortenAddress(account)}
+              </Button>
+              <WalletModal />
+            </>
+          ) : (
+            <Button 
+              className="connect-button" 
+              type="primary" 
+              onClick={handleConnect}
+            >
+              Connect Wallet
+            </Button>
+          )}
+        </div>
       </div>
       {/* Waiting Modal */}
       <Modal
