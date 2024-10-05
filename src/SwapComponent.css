@@ -71,7 +71,7 @@
 }
 
 .slippage-control {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .slippage-label {
@@ -306,4 +306,198 @@
 .swap-tokens-button .anticon {
   color: white;
   font-size: 16px;
+}
+
+/* 更新 .settings-modal 相關樣式 */
+
+/* 更新 .settings-modal 相關樣式 */
+
+.settings-modal .ant-modal-content {
+  background-color: #f8f8f8;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.settings-modal .ant-modal-header {
+  background-color: var(--green);
+  border-radius: 12px;
+  padding: 0;
+}
+
+.settings-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+}
+
+.settings-modal .ant-modal-title {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.settings-modal-close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.settings-modal-close-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+/* Collapse header */
+
+.swap-card .ant-collapse {
+  margin-top: 10px;
+  /* padding: 10px 0; */
+}
+
+.ant-collapse-ghost > .ant-collapse-item > .ant-collapse-header {
+  color: var(--green);
+  transition: all 0.3s ease;
+}
+
+.ant-collapse-ghost > .ant-collapse-item > .ant-collapse-header:hover {
+  color: var(--green-dark);
+  background-color: rgba(6, 214, 160, 0.1);
+}
+
+.ant-collapse-ghost
+  > .ant-collapse-item.ant-collapse-item-active
+  > .ant-collapse-header {
+  color: var(--green-dark);
+}
+
+.ant-collapse-ghost
+  > .ant-collapse-item
+  > .ant-collapse-header
+  .ant-collapse-arrow {
+  color: var(--green);
+}
+
+.ant-collapse-ghost
+  > .ant-collapse-item
+  > .ant-collapse-header:hover
+  .ant-collapse-arrow {
+  color: var(--green-dark);
+}
+
+/* .settings-content {
+  padding: 24px;
+} */
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.setting-item:last-child {
+  margin-bottom: 0;
+}
+
+.setting-label {
+  /* font-size: 16px; */
+  /* font-weight: 500; */
+  color: #333;
+}
+
+.deadline-input {
+  width: 80px;
+}
+
+/* .gas-fee-radio-group */
+
+.gas-fee-radio-group .ant-radio-button-wrapper {
+  border: none;
+  background-color: #f0f0f0;
+  color: var(--green);
+  transition: all 0.3s;
+}
+
+.gas-fee-radio-group .ant-radio-button-wrapper:not(:first-child)::before {
+  display: none;
+}
+
+.gas-fee-radio-group .ant-radio-button-wrapper:hover {
+  color: var(--green-dark);
+  background-color: #e0e0e0;
+}
+
+.gas-fee-radio-group .ant-radio-button-wrapper-checked {
+  background-color: var(--green);
+  color: white;
+  box-shadow: none;
+}
+
+.gas-fee-radio-group .ant-radio-button-wrapper-checked:hover {
+  background-color: var(--green-dark);
+  color: white;
+}
+
+.gas-fee-radio-group .ant-radio-button-wrapper:focus-within {
+  box-shadow: none;
+  outline: none;
+}
+
+/* 確保按鈕之間有一些間距 */
+.gas-fee-radio-group .ant-radio-button-wrapper + .ant-radio-button-wrapper {
+  margin-left: 8px;
+}
+
+/* 圓角處理 */
+.gas-fee-radio-group .ant-radio-button-wrapper {
+  border-radius: 4px;
+}
+
+/* 移除 Ant Design 的默認 focus 樣式 */
+.gas-fee-radio-group .ant-radio-button-wrapper:focus-within {
+  outline: none;
+}
+
+.settings-button {
+  background-color: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+.settings-button:hover,
+.settings-button:focus {
+  background-color: var(--green-dark);
+  border-color: var(--green-dark);
+  color: white;
+}
+
+.ant-input-number-handler-wrap {
+  background-color: var(--green);
+}
+
+.ant-input-number-handler:hover .ant-input-number-handler-up-inner,
+.ant-input-number-handler:hover .ant-input-number-handler-down-inner {
+  color: white;
+}
+
+.ant-input-number:hover,
+.ant-input-number:focus {
+  border-color: var(--green);
+}
+
+.ant-input-number-focused {
+  box-shadow: 0 0 0 2px rgba(6, 214, 160, 0.2);
+}
+
+.gas-fee-radio-group .ant-radio-button-wrapper {
+  margin-bottom: 8px;
 }

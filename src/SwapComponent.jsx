@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification, Tooltip } from 'antd';
-import { SwapOutlined, LoadingOutlined, BarChartOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification, Tooltip, Radio, InputNumber, Collapse, Space } from 'antd';
+import { SwapOutlined, LoadingOutlined, BarChartOutlined, ArrowDownOutlined, SettingOutlined, CloseOutlined, DownOutlined, UpOutlined  } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
@@ -11,6 +11,7 @@ import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toSmallestUnit } f
 import './SwapComponent.css';
 
 const { Text } = Typography;
+const { Panel } = Collapse;
 
 const availableTokens = [
   { symbol: 'ETH', code: 'ethereum', decimals: 18, address: "0xa3127E9B960DA8E7b297411728Def559bCaDf9c4" },
@@ -59,13 +60,19 @@ const SwapComponent = () => {
   // State for waiting modal
   const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
 
-  const { client, connected, sessionId, estimateResponse } = useWebSocket();
+  const { client, connected, sessionId, estimateResponse, gasPrice  } = useWebSocket();
 
   const [latestTransaction, setLatestTransaction] = useState(null);
 
   const [isApprovalNeeded, setIsApprovalNeeded] = useState(false);
   const [isExchangeRateModalVisible, setIsExchangeRateModalVisible] = useState(false);
   const [selectedExchangeIndex, setSelectedExchangeIndex] = useState(0);
+
+  // advanced setting
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
+  const [gasFeeOption, setGasFeeOption] = useState('normal');
+  const [adjustedGasPrice, setAdjustedGasPrice] = useState(null);
+  const [deadlineMinutes, setDeadlineMinutes] = useState(10); 
 
   // fetch user and token data
   useEffect(() => {
@@ -129,6 +136,23 @@ const SwapComponent = () => {
       });
     }
   }, [account, web3, sellAmount, sellToken]);
+
+  useEffect(() => {
+    if (gasPrice) {
+      let adjustedPrice;
+      switch (gasFeeOption) {
+        case 'fast':
+          adjustedPrice = new BigNumber(gasPrice).times(1.5).integerValue().toString();
+          break;
+        case 'fastest':
+          adjustedPrice = new BigNumber(gasPrice).times(2).integerValue().toString();
+          break;
+        default:
+          adjustedPrice = gasPrice;
+      }
+      setAdjustedGasPrice(adjustedPrice);
+    }
+  }, [gasPrice, gasFeeOption]);
   
   // handle slippage change
   const handleSlippageChange = (value) => {
@@ -298,7 +322,7 @@ const SwapComponent = () => {
       const contract = new web3.eth.Contract(contractABI, contractAddress);
   
       // prepare the parameters
-      const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
+      const deadline = Math.floor(Date.now() / 1000) + (deadlineMinutes * 60);
       const exchanger = estimateResponse.data[selectedExchangeIndex].liquidity.exchanger === "Uniswap" ? 0 : 1;
       const poolId = estimateResponse.data[selectedExchangeIndex].liquidity.poolId !== null ? estimateResponse.data[selectedExchangeIndex].liquidity.poolId : "0xc1e0942d3babe2ce30a78d0702a8b5ace651505400020000000000000000014d"; //default is WETH/WBTC poolId
 
@@ -325,7 +349,7 @@ const SwapComponent = () => {
         transactionParameters.exchange,
         transactionParameters.path,
         transactionParameters.poolId
-      ).send({ from: account })
+      ).send({ from: account, gasPrice: adjustedGasPrice })
       .on('transactionHash', (hash) => {
         // Immediately close the waiting modal after transaction is signed
         setIsWaitingForTransaction(false);
@@ -446,6 +470,24 @@ const SwapComponent = () => {
     }
   };
 
+  const formatGasPrice = (price) => {
+    if (!price) return 'N/A';
+    try {
+      return `${toNormalUnit(price, 9)} Gwei`;
+    } catch (error) {
+      console.error('Error formatting gas price:', error);
+      return 'N/A';
+    }
+  };
+
+  const handleGasFeeOptionChange = (e) => {
+    setGasFeeOption(e.target.value);
+  };
+
+  const handleDeadlineChange = (value) => {
+    setDeadlineMinutes(value);
+  };
+
   return (
     <div className="swap-container">
       <div className="swap-card">
@@ -521,19 +563,6 @@ const SwapComponent = () => {
           <Text className="balance-text">Balance: {getBalanceForToken(buyToken.address)}</Text>
         </Card>
 
-        {/* Slippage Control */}
-        <div className="slippage-control">
-          <Text className="slippage-label">Slippage: {slippage}%</Text>
-          <Slider
-            className="slippage-slider"
-            min={0.1}
-            max={5}
-            step={0.1}
-            value={slippage}
-            onChange={handleSlippageChange}
-          />
-        </div>
-
         {estimateResponse && (
           <div className="estimate-info">
             <div className="estimate-row">
@@ -553,6 +582,60 @@ const SwapComponent = () => {
         <Button className="swap-button ant-btn ant-btn-primary" type="primary" onClick={handleSwap} icon={<SwapOutlined />}>
           {isApprovalNeeded ? 'Approve Required' : 'Swap'}
         </Button>
+        {/* Collapsible Settings Panel */}
+        <Collapse
+          ghost
+          expandIcon={({ isActive }) => <DownOutlined rotate={isActive ? 180 : 0} />}
+        >
+          <Panel header="Advanced Transaction Settings" key="1">
+            <Space direction="vertical" style={{ width: '100%' }}>
+              {/* Slippage Control */}
+              <div className="slippage-control">
+                <Text className="slippage-label">Slippage: {slippage}%</Text>
+                <Slider
+                  className="slippage-slider"
+                  min={0.1}
+                  max={5}
+                  step={0.1}
+                  value={slippage}
+                  onChange={handleSlippageChange}
+                />
+              </div>
+              {/* <div className="swap-settings">
+                <Button
+                  icon={<SettingOutlined />}
+                  onClick={() => setIsSettingsModalVisible(true)}
+                  className="settings-button"
+                />
+              </div> */}
+              <div className="settings-content">
+                <div className="setting-item">
+                  <Text className="setting-label">Deadline (minutes)</Text>
+                  <InputNumber
+                    min={1}
+                    max={60}
+                    defaultValue={10}
+                    value={deadlineMinutes}
+                    onChange={handleDeadlineChange}
+                    className="deadline-input"
+                  />
+                </div>
+                <div className="setting-item">
+                  <Text className="setting-label">Gas Fee</Text>
+                  <Radio.Group 
+                    onChange={handleGasFeeOptionChange} 
+                    value={gasFeeOption}
+                    className="gas-fee-radio-group"
+                  >
+                    <Radio.Button value="normal">Normal</Radio.Button>
+                    <Radio.Button value="fast">Fast</Radio.Button>
+                    <Radio.Button value="fastest">Fastest</Radio.Button>
+                  </Radio.Group>
+                </div>
+              </div>
+            </Space>
+          </Panel>
+        </Collapse>
       </div>
       
       {/* show transaction history */}
@@ -607,7 +690,7 @@ const SwapComponent = () => {
       </Modal>
       {/* Exchange Rate Modal */}
       <Modal
-        title="Othert Exchange Rates"
+        title="Other Exchange Rates"
         open={isExchangeRateModalVisible}
         onCancel={handleExchangeRateModalCancel}
         footer={null}
@@ -618,6 +701,49 @@ const SwapComponent = () => {
           onSelectExchange={handleExchangeSelect}
           selectedIndex={selectedExchangeIndex}
         />
+      </Modal>
+      <Modal
+        title={
+          <div className="settings-modal-header">
+            <span>Advanced Settings</span>
+            <Button
+              icon={<CloseOutlined />}
+              onClick={() => setIsSettingsModalVisible(false)}
+              className="settings-modal-close-button"
+            />
+          </div>
+        }
+        open={isSettingsModalVisible}
+        onCancel={() => setIsSettingsModalVisible(false)}
+        footer={null}
+        className="settings-modal"
+        closeIcon={null}
+      >
+        <div className="settings-content">
+          <div className="setting-item">
+            <Text className="setting-label">Transaction deadline (minutes):</Text>
+            <InputNumber
+              min={1}
+              max={60}
+              defaultValue={10}
+              value={deadlineMinutes}
+              onChange={handleDeadlineChange}
+              className="deadline-input"
+            />
+          </div>
+          <div className="setting-item">
+            <Text className="setting-label">Gas Fee:</Text>
+            <Radio.Group 
+              onChange={handleGasFeeOptionChange} 
+              value={gasFeeOption}
+              className="gas-fee-radio-group"
+            >
+              <Radio.Button value="normal">Normal</Radio.Button>
+              <Radio.Button value="fast">Fast</Radio.Button>
+              <Radio.Button value="fastest">Fastest</Radio.Button>
+            </Radio.Group>
+          </div>
+        </div>
       </Modal>
     </div>
   );
