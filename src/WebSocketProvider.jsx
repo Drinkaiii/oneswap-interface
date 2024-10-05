@@ -75,8 +75,13 @@ export const WebSocketProvider = ({ children }) => {
     };
   }, []);
 
+  // reset function
+  const resetEstimateResponse = () => {
+    setEstimateResponse(null);
+  };
+
   return (
-    <WebSocketContext.Provider value={{ client, connected, sessionId, estimateResponse, gasPrice }}>
+    <WebSocketContext.Provider value={{ client, connected, sessionId, estimateResponse, gasPrice, resetEstimateResponse }}>
       {children}
     </WebSocketContext.Provider>
   );

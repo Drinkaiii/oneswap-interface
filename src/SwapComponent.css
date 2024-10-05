@@ -1,14 +1,14 @@
 :root {
   --red: #ef476f;
-  --red-dark: #d13d63; /* 新增：更深的红色 */
+  --red-dark: #d13d63;
   --yellow: #ffd166;
-  --yellow-dark: #ffc233; /* 新增：更深的黄色 */
+  --yellow-dark: #ffc233;
   --green: #06d6a0;
-  --green-dark: #05b185; /* 新增：更深的绿色 */
+  --green-dark: #05b185;
   --blue: #118ab2;
-  --blue-dark: #0e7494; /* 新增：更深的蓝色 */
+  --blue-dark: #0e7494;
   --dark-blue: #073b4c;
-  --dark-blue-darker: #052e3b; /* 新增：更深的深蓝色 */
+  --dark-blue-darker: #052e3b;
 }
 
 .swap-container {
@@ -22,7 +22,7 @@
   border: 1px solid #d9d9d9;
   border-radius: 8px;
   padding: 20px;
-  width: 400px;
+  width: 480px;
   background-color: #f0f2f5;
 }
 

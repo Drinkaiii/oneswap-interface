@@ -60,7 +60,7 @@ const SwapComponent = () => {
   // State for waiting modal
   const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
 
-  const { client, connected, sessionId, estimateResponse, gasPrice } = useWebSocket();
+  const { client, connected, sessionId, estimateResponse, gasPrice, resetEstimateResponse } = useWebSocket();
 
   const [latestTransaction, setLatestTransaction] = useState(null);
 
@@ -159,6 +159,12 @@ const SwapComponent = () => {
       setAdjustedGasPrice(adjustedPrice);
     }
   }, [gasPrice, gasFeeOption]);
+
+  // reset estimate response in first loading page
+  useEffect(() => {
+    resetEstimateResponse();
+    setBuyAmount(new BigNumber(0));
+  }, []);
   
   // handle slippage change
   // const handleSlippageChange = (value) => {
@@ -508,11 +514,11 @@ const SwapComponent = () => {
                 const inputValue = e.target.value;
                 if (inputValue === "" || inputValue === '0' || isNaN(inputValue)) {
                   setSellAmount("");
+                  setEffectAmount(toNormalUnit(buyAmount, 18));
                   setBuyAmount(new BigNumber(0));
-                  setEffectAmount(toNormalUnit(sellAmount, 18));
                 } else {
+                  setEffectAmount(toNormalUnit(buyAmount, 18));
                   setSellAmount(toSmallestUnit(inputValue, 18));
-                  setEffectAmount(toNormalUnit(sellAmount, 18));
                 }
               }}
             />
