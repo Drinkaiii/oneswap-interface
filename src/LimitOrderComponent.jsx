@@ -7,6 +7,7 @@ import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
 import LimitOrderHistory  from './LimitOrderHistory';
 import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toSmallestUnit } from './utils';
+import AdvancedSettings, { useAdvancedSettings } from './AdvancedSettings';
 import './LimitOrderComponent.css';
 
 const { Text } = Typography;
@@ -59,11 +60,14 @@ const LimitOrderComponent = () => {
   // State for waiting modal
   const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
 
-  const { client, connected, sessionId, estimateResponse } = useWebSocket();
+  const { client, connected, sessionId, estimateResponse, gasPrice } = useWebSocket();
 
   const [latestTransaction, setLatestTransaction] = useState(null);
   const [cancelledOrders, setCancelledOrders] = useState([]);
   const [isApprovalNeeded, setIsApprovalNeeded] = useState(false);
+
+  const {gasFeeOption,} = useAdvancedSettings();
+  const [adjustedGasPrice, setAdjustedGasPrice] = useState(null);
   
 
   // fetch user and token data
@@ -106,6 +110,23 @@ const LimitOrderComponent = () => {
       });
     }
   }, [account, web3, sellAmount, sellToken]);
+
+  useEffect(() => {
+    if (gasPrice) {
+      let adjustedPrice;
+      switch (gasFeeOption) {
+        case 'fast':
+          adjustedPrice = new BigNumber(gasPrice).times(1.5).integerValue().toString();
+          break;
+        case 'fastest':
+          adjustedPrice = new BigNumber(gasPrice).times(2).integerValue().toString();
+          break;
+        default:
+          adjustedPrice = gasPrice;
+      }
+      setAdjustedGasPrice(adjustedPrice);
+    }
+  }, [gasPrice, gasFeeOption]);
   
   // send estimate request by WebSocket
   const sendEstimateRequest = () => {
@@ -200,7 +221,7 @@ const LimitOrderComponent = () => {
       // Call the placeOrder function on the contract
       const tx = await contract.methods
         .placeOrder(sellToken.address, buyToken.address, amountIn, amountOut) // Use the correct minAmountOut
-        .send({ from: account })
+        .send({ from: account, gasPrice: adjustedGasPrice })
         .on('transactionHash', (hash) => {
           setIsWaitingForTransaction(false); // Close waiting modal
           console.log("Transaction hash:", hash);
@@ -265,7 +286,7 @@ const handleCancelOrder = async (orderId) => {
       const contract = new web3.eth.Contract(contractABI, contractAddress);
       
       // Call the cancelOrder method
-      await contract.methods.cancelOrder(orderId).send({ from: account })
+      await contract.methods.cancelOrder(orderId).send({ from: account, gasPrice: adjustedGasPrice })
         .on('transactionHash', (hash) => {
           console.log("Transaction hash for cancellation:", hash);
           setIsWaitingForTransaction(false);
@@ -530,8 +551,8 @@ const handleCancelOrder = async (orderId) => {
         >
           {isApprovalNeeded ? 'Approve Required' : 'Place Order'}
         </Button>
+        <AdvancedSettings showSlippage={false} showDeadline={false}/>
       </div>
-
       {/* Order History Component */}
       <div className="order-history-container">
         <LimitOrderHistory 

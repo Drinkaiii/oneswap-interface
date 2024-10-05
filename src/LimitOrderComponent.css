@@ -224,7 +224,7 @@
 
 /* swithc token button */
 
-.swap-tokens-button {
+place-order-button {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 32px;
@@ -241,22 +241,22 @@
   z-index: 10;
 }
 
-.swap-tokens-button:hover,
-.swap-tokens-button:focus {
+place-order-button:hover,
+place-order-button:focus {
   background-color: var(--green-dark) !important;
 }
 
-.swap-tokens-button:active {
+place-order-button:active {
   background-color: var(--green-dark) !important;
   transform: translate(-50%, -50%) scale(0.9) !important;
 }
 
-.swap-tokens-button:not(:active) {
+place-order-button:not(:active) {
   background-color: var(--green) !important;
   transform: translate(-50%, -50%) !important;
 }
 
-.swap-tokens-button .anticon {
+place-order-button .anticon {
   color: white;
   font-size: 16px;
 }

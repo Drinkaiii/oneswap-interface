@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification, Tooltip, Radio, InputNumber, Collapse, Space } from 'antd';
-import { SwapOutlined, LoadingOutlined, BarChartOutlined, ArrowDownOutlined, SettingOutlined, CloseOutlined, DownOutlined, UpOutlined  } from '@ant-design/icons';
+import { Button, Input, Modal, List, Typography, Card, Spin, notification, Tooltip } from 'antd';
+import { SwapOutlined, LoadingOutlined, BarChartOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
@@ -8,10 +8,10 @@ import BigNumber from 'bignumber.js';
 import ExchangeRateCardList from './ExchangeRateCardList';
 import TransactionHistory from './TransactionHistory';
 import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toSmallestUnit } from './utils';
+import AdvancedSettings, { useAdvancedSettings } from './AdvancedSettings';
 import './SwapComponent.css';
 
 const { Text } = Typography;
-const { Panel } = Collapse;
 
 const availableTokens = [
   { symbol: 'ETH', code: 'ethereum', decimals: 18, address: "0xa3127E9B960DA8E7b297411728Def559bCaDf9c4" },
@@ -51,7 +51,7 @@ const SwapComponent = () => {
   const [buyAmount, setBuyAmount] = useState(new BigNumber("0"));// default: 0
   const [effectAmount, setEffectAmount] = useState(sellAmount);
 
-  const [slippage, setSlippage] = useState(1); // default: 1%
+  //const [slippage, setSlippage] = useState(1); // default: 1%
   const [minAmountOut, setMinAmountOut] = useState(new BigNumber("0")); // default: 0
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -60,7 +60,7 @@ const SwapComponent = () => {
   // State for waiting modal
   const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
 
-  const { client, connected, sessionId, estimateResponse, gasPrice  } = useWebSocket();
+  const { client, connected, sessionId, estimateResponse, gasPrice } = useWebSocket();
 
   const [latestTransaction, setLatestTransaction] = useState(null);
 
@@ -70,9 +70,15 @@ const SwapComponent = () => {
 
   // advanced setting
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
-  const [gasFeeOption, setGasFeeOption] = useState('normal');
+  // const [gasFeeOption, setGasFeeOption] = useState('normal');
   const [adjustedGasPrice, setAdjustedGasPrice] = useState(null);
-  const [deadlineMinutes, setDeadlineMinutes] = useState(10); 
+  // const [deadlineMinutes, setDeadlineMinutes] = useState(10); 
+
+  const {
+    slippage,
+    deadlineMinutes,
+    gasFeeOption,
+  } = useAdvancedSettings();
 
   // fetch user and token data
   useEffect(() => {
@@ -109,7 +115,7 @@ const SwapComponent = () => {
     }
   }, [selectedExchangeIndex]);
 
-  // listen slippage and caculate minAmountOut
+   // Update this useEffect to use the slippage from context
   useEffect(() => {
     if (estimateResponse && estimateResponse.data[selectedExchangeIndex].amountOut) {
       const amountOutEstimate = new BigNumber(estimateResponse.data[selectedExchangeIndex].amountOut);
@@ -155,9 +161,9 @@ const SwapComponent = () => {
   }, [gasPrice, gasFeeOption]);
   
   // handle slippage change
-  const handleSlippageChange = (value) => {
-    setSlippage(value);
-  };
+  // const handleSlippageChange = (value) => {
+  //   setSlippage(value);
+  // };
 
   // check if approval is needed
   const checkApprovalNeeded = async (tokenAddress, spender, amount) => {
@@ -338,7 +344,7 @@ const SwapComponent = () => {
         poolId: poolId
       };
       console.log(transactionParameters);
-  
+
       // send the transaction
       const tx = await contract.methods.swapTokens(
         transactionParameters.tokenIn,
@@ -480,13 +486,13 @@ const SwapComponent = () => {
     }
   };
 
-  const handleGasFeeOptionChange = (e) => {
-    setGasFeeOption(e.target.value);
-  };
+  // const handleGasFeeOptionChange = (e) => {
+  //   setGasFeeOption(e.target.value);
+  // };
 
-  const handleDeadlineChange = (value) => {
-    setDeadlineMinutes(value);
-  };
+  // const handleDeadlineChange = (value) => {
+  //   setDeadlineMinutes(value);
+  // };
 
   return (
     <div className="swap-container">
@@ -583,13 +589,13 @@ const SwapComponent = () => {
           {isApprovalNeeded ? 'Approve Required' : 'Swap'}
         </Button>
         {/* Collapsible Settings Panel */}
-        <Collapse
+        <AdvancedSettings />
+        {/* <Collapse
           ghost
           expandIcon={({ isActive }) => <DownOutlined rotate={isActive ? 180 : 0} />}
         >
           <Panel header="Advanced Transaction Settings" key="1">
             <Space direction="vertical" style={{ width: '100%' }}>
-              {/* Slippage Control */}
               <div className="slippage-control">
                 <Text className="slippage-label">Slippage: {slippage}%</Text>
                 <Slider
@@ -601,13 +607,6 @@ const SwapComponent = () => {
                   onChange={handleSlippageChange}
                 />
               </div>
-              {/* <div className="swap-settings">
-                <Button
-                  icon={<SettingOutlined />}
-                  onClick={() => setIsSettingsModalVisible(true)}
-                  className="settings-button"
-                />
-              </div> */}
               <div className="settings-content">
                 <div className="setting-item">
                   <Text className="setting-label">Deadline (minutes)</Text>
@@ -635,7 +634,7 @@ const SwapComponent = () => {
               </div>
             </Space>
           </Panel>
-        </Collapse>
+        </Collapse> */}
       </div>
       
       {/* show transaction history */}
@@ -702,7 +701,7 @@ const SwapComponent = () => {
           selectedIndex={selectedExchangeIndex}
         />
       </Modal>
-      <Modal
+      {/* <Modal
         title={
           <div className="settings-modal-header">
             <span>Advanced Settings</span>
@@ -744,7 +743,7 @@ const SwapComponent = () => {
             </Radio.Group>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };
