@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Button, Input, Modal, List, Typography, Card, Spin, notification, Tooltip } from 'antd';
 import { SwapOutlined, LoadingOutlined, BarChartOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
+import { NumericFormat } from 'react-number-format';
 import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
@@ -72,7 +73,7 @@ const SwapComponent = () => {
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
   // const [gasFeeOption, setGasFeeOption] = useState('normal');
   const [adjustedGasPrice, setAdjustedGasPrice] = useState(null);
-  // const [deadlineMinutes, setDeadlineMinutes] = useState(10); 
+  // const [deadlineMinutes, setDeadlineMinutes] = useState(10);
 
   const {
     slippage,
@@ -500,6 +501,18 @@ const SwapComponent = () => {
   //   setDeadlineMinutes(value);
   // };
 
+  const handleSellAmountChange = (values) => {
+    const { value } = values;
+    const newSellAmount = new BigNumber(value || 0);
+    
+    const sellAmountSmallestUnit = toSmallestUnit(newSellAmount, sellToken.decimals);
+    setSellAmount(sellAmountSmallestUnit);
+    if (sellAmountSmallestUnit.isGreaterThan(0)) 
+      setEffectAmount(toNormalUnit(buyAmount, buyToken.decimals));
+    else
+      setBuyAmount(new BigNumber(0));
+  };
+
   return (
     <div className="swap-container">
       <div className="swap-card">
@@ -507,20 +520,15 @@ const SwapComponent = () => {
         <Card className="token-card sell-token">
           <Text className="token-label">Sell</Text>
           <div className="token-input">
-            <Input
+            <NumericFormat
               className="amount-input"
-              value={toNormalUnit(sellAmount, 18)}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                if (inputValue === "" || inputValue === '0' || isNaN(inputValue)) {
-                  setSellAmount("");
-                  setEffectAmount(toNormalUnit(buyAmount, 18));
-                  setBuyAmount(new BigNumber(0));
-                } else {
-                  setEffectAmount(toNormalUnit(buyAmount, 18));
-                  setSellAmount(toSmallestUnit(inputValue, 18));
-                }
-              }}
+              value={toNormalUnit(sellAmount, sellToken.decimals).toString()}
+              onValueChange={handleSellAmountChange}
+              thousandSeparator={true}
+              decimalScale={sellToken.decimals}
+              allowNegative={false}
+              placeholder="0"
+              customInput={Input}
             />
             <Button 
               className="token-select-button"

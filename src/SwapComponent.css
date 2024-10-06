@@ -49,6 +49,9 @@
   outline: none;
   background-color: transparent;
   flex: 1;
+  width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .token-select-button {
@@ -70,21 +73,8 @@
   color: rgba(0, 0, 0, 0.45);
 }
 
-.slippage-control {
-  margin-bottom: 10px;
-}
-
-.slippage-label {
-  display: block;
-  margin-bottom: 10px;
-}
-
 .estimate-info {
   margin-bottom: 15px;
-}
-
-.estimate-text {
-  display: block;
 }
 
 .swap-button.ant-btn-primary {

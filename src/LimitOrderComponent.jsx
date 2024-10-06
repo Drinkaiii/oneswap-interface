@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification  } from 'antd';
 import { SwapOutlined, LoadingOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
+import { NumericFormat } from 'react-number-format';
 import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
@@ -436,6 +437,29 @@ const handleCancelOrder = async (orderId) => {
     }
   };
 
+  const handleSellAmountChange = (values) => {
+    const { value } = values;
+    if (value === "" || value === '0') {
+      setSellAmount(new BigNumber(0));
+      setEffectAmount(new BigNumber(0));
+      setEstimateAmount(new BigNumber(0));
+    } else {
+      const newSellAmount = new BigNumber(value);
+      setSellAmount(toSmallestUnit(newSellAmount, sellToken.decimals));
+      setEffectAmount(toNormalUnit(buyAmount, buyToken.decimals));
+    }
+  };
+  
+  const handleBuyAmountChange = (values) => {
+    const { value } = values;
+    if (value === "" || value === '0') {
+      setBuyAmount(new BigNumber(0));
+    } else {
+      const newBuyAmount = new BigNumber(value);
+      setBuyAmount(toSmallestUnit(newBuyAmount, buyToken.decimals));
+    }
+  };
+
   return (
     <div className="limit-order-container">
       <div className="limit-order-card">
@@ -443,20 +467,14 @@ const handleCancelOrder = async (orderId) => {
         <Card className="token-card sell-token">
           <Text className="token-label">Sell</Text>
           <div className="token-input">
-            <Input
+            <NumericFormat
               className="amount-input"
-              value={toNormalUnit(sellAmount, 18)}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                if (inputValue === "" || inputValue === '0' || isNaN(inputValue)) {
-                  setSellAmount("");
-                  setEffectAmount(toNormalUnit(buyAmount, 18));
-                  setEstimateAmount(new BigNumber(0));
-                } else {
-                  setEffectAmount(toNormalUnit(buyAmount, 18));
-                  setSellAmount(toSmallestUnit(inputValue, 18));
-                }
-              }}
+              value={toNormalUnit(sellAmount, sellToken.decimals).toString()}
+              onValueChange={handleSellAmountChange}
+              thousandSeparator={true}
+              decimalScale={sellToken.decimals}
+              allowNegative={false}
+              placeholder="0"
             />
             <Button 
               className="token-select-button"
@@ -486,17 +504,14 @@ const handleCancelOrder = async (orderId) => {
         <Card className="token-card buy-token">
           <Text className="token-label">Buy</Text>
           <div className="token-input">
-            <Input
+            <NumericFormat
               className="amount-input"
-              value={toNormalUnit(buyAmount, 18)}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                if (inputValue === "" || inputValue === '0' || isNaN(inputValue)) {
-                  return;
-                } else {
-                  setBuyAmount(toSmallestUnit(inputValue, 18));
-                }
-              }}
+              value={toNormalUnit(buyAmount, buyToken.decimals).toString()}
+              onValueChange={handleBuyAmountChange}
+              thousandSeparator={true}
+              decimalScale={sellToken.decimals}
+              allowNegative={false}
+              placeholder="0"
             />
             <Button 
               className="token-select-button"

@@ -40,13 +40,16 @@
   align-items: center;
 }
 
-.amount-input.ant-input {
+.amount-input {
   font-size: 40px;
   padding-left: 0;
   border: none;
   box-shadow: none;
   outline: none;
   background-color: transparent;
+  width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .amount-input.ant-input:focus,
