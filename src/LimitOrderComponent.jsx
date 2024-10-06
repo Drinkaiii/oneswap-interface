@@ -468,9 +468,9 @@ const handleCancelOrder = async (orderId) => {
     // setEffectAmount(buyAmount);
   
     // get new estimate response
-    if (buyAmount.gt(0)) {
-      sendEstimateRequest();
-    }
+    // if (buyAmount.gt(0)) {
+    //   sendEstimateRequest();
+    // }
   };
 
   const handleSellAmountChange = (values) => {

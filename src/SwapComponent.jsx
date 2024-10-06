@@ -508,11 +508,6 @@ const SwapComponent = () => {
     // setSellAmount(buyAmount);
     // setBuyAmount(tempAmount);
     // setEffectAmount(buyAmount);
-  
-    // get new estimate response
-    if (buyAmount.gt(0)) {
-      sendEstimateRequest();
-    }
   };
 
   const formatGasPrice = (price) => {
