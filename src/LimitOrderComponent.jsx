@@ -69,6 +69,8 @@ const LimitOrderComponent = () => {
 
   const {gasFeeOption,} = useAdvancedSettings();
   const [adjustedGasPrice, setAdjustedGasPrice] = useState(null);
+
+  const [balancesLoading, setBalancesLoading] = useState(false);
   
 
   // fetch user and token data
@@ -78,10 +80,16 @@ const LimitOrderComponent = () => {
 
   // Fetch user's wallet balance from Worker back-end
   useEffect(() => {
-    if (account)
-      fetchAccountBalances(account, setBalances); // fetch account info again if account change
-    else
+    if (account) {
+      setBalancesLoading(true);
+      fetchAccountBalances(account, (newBalances) => {
+        setBalances(newBalances);
+        setBalancesLoading(false);
+      });
+    } else {
       setBalances({});
+      setBalancesLoading(false);
+    }
   }, [account]);
 
   // listen sellAmount change: if sellAmount change, resend the request
@@ -326,13 +334,18 @@ const handleCancelOrder = async (orderId) => {
   };  
 
   // get user balance
-  function getBalanceForToken(tokenAddress){
+  function getBalanceForToken(tokenAddress) {
+    if (balancesLoading) {
+      return (
+        <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
+      );
+    }
     const tokenData = balances[tokenAddress.toLowerCase()];
     if (!tokenData || !tokenData.balance)
-      return "0.0000"; 
+      return "0.000"; 
     const tokenBalance = toNormalUnit(tokenData.balance, tokenData.decimals); 
     return tokenBalance;
-  };
+  }
 
   // check if approval is needed
   const checkApprovalNeeded = async (tokenAddress, spender, amount) => {
@@ -490,7 +503,9 @@ const handleCancelOrder = async (orderId) => {
               {sellToken.symbol}
             </Button>
           </div>
-          <Text className="balance-text">Balance: {getBalanceForToken(sellToken.address)}</Text>
+          <Text className="balance-text">
+            Balance: <span className="balance-value">{getBalanceForToken(buyToken.address)}</span>
+          </Text>
         </Card>
 
         {/* Switch button */}
@@ -527,7 +542,9 @@ const handleCancelOrder = async (orderId) => {
               {buyToken.symbol}
             </Button>
           </div>
-          <Text className="balance-text">Balance: {getBalanceForToken(buyToken.address)}</Text>
+          <Text className="balance-text">
+            Balance: <span className="balance-value">{getBalanceForToken(buyToken.address)}</span>
+          </Text>
         </Card>
 
         {/* Estimate Area */}

@@ -69,6 +69,8 @@ const SwapComponent = () => {
   const [isExchangeRateModalVisible, setIsExchangeRateModalVisible] = useState(false);
   const [selectedExchangeIndex, setSelectedExchangeIndex] = useState(0);
 
+  const [balancesLoading, setBalancesLoading] = useState(false);
+
   // advanced setting
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
   // const [gasFeeOption, setGasFeeOption] = useState('normal');
@@ -88,10 +90,16 @@ const SwapComponent = () => {
 
   // Fetch user's wallet balance from Worker back-end
   useEffect(() => {
-    if (account)
-      fetchAccountBalances(account, setBalances); // fetch account info again if account change
-    else
+    if (account) {
+      setBalancesLoading(true);
+      fetchAccountBalances(account, (newBalances) => {
+        setBalances(newBalances);
+        setBalancesLoading(false);
+      });
+    } else {
       setBalances({});
+      setBalancesLoading(false);
+    }
   }, [account]);
 
   // listen sellAmount change: if sellAmount change, resend the request
@@ -443,13 +451,18 @@ const SwapComponent = () => {
   };
 
   // get user balance
-  function getBalanceForToken(tokenAddress){
+  function getBalanceForToken(tokenAddress) {
+    if (balancesLoading) {
+      return (
+        <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
+      );
+    }
     const tokenData = balances[tokenAddress.toLowerCase()];
     if (!tokenData || !tokenData.balance)
-      return "0.0000"; 
+      return "0.000"; 
     const tokenBalance = toNormalUnit(tokenData.balance, tokenData.decimals); 
     return tokenBalance;
-  };
+  }
 
   const showExchangeRateModal = () => {
     setIsExchangeRateModalVisible(true);
@@ -544,7 +557,9 @@ const SwapComponent = () => {
               {sellToken.symbol}
             </Button>
           </div>
-          <Text className="balance-text">Balance: {getBalanceForToken(sellToken.address)}</Text>
+          <Text className="balance-text">
+            Balance: <span className="balance-value">{getBalanceForToken(sellToken.address)}</span>
+          </Text>
         </Card>
 
         {/* Switch button */}
@@ -580,7 +595,9 @@ const SwapComponent = () => {
               {buyToken.symbol}
             </Button>
           </div>
-          <Text className="balance-text">Balance: {getBalanceForToken(buyToken.address)}</Text>
+          <Text className="balance-text">
+            Balance: <span className="balance-value">{getBalanceForToken(sellToken.address)}</span>
+          </Text>
         </Card>
 
         {estimateResponse && (

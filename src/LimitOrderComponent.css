@@ -47,6 +47,7 @@
   box-shadow: none;
   outline: none;
   background-color: transparent;
+  flex: 1;
   width: 60%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -81,6 +82,7 @@
 
 .token-select-button {
   font-size: 30px;
+  margin-left: 10px;
   padding: 0 12px;
   height: 100%;
   display: flex;
