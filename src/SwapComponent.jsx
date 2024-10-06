@@ -65,6 +65,7 @@ const SwapComponent = () => {
 
   const [latestTransaction, setLatestTransaction] = useState(null);
 
+  const [isInsufficientBalance, setIsInsufficientBalance] = useState(false);
   const [isApprovalNeeded, setIsApprovalNeeded] = useState(false);
   const [isExchangeRateModalVisible, setIsExchangeRateModalVisible] = useState(false);
   const [selectedExchangeIndex, setSelectedExchangeIndex] = useState(0);
@@ -138,6 +139,13 @@ const SwapComponent = () => {
     }
   }, [estimateResponse, slippage, selectedExchangeIndex]);
 
+  // Check balance amount
+  useEffect(() => {
+    if (sellAmount && sellToken) {
+      checkBalance();
+    }
+  }, [sellAmount, sellToken, balances]);
+
   // Check approval when sellAmount or sellToken changes
   useEffect(() => {
     
@@ -179,6 +187,13 @@ const SwapComponent = () => {
   // const handleSlippageChange = (value) => {
   //   setSlippage(value);
   // };
+
+  // check balance
+  const checkBalance = () => {
+    const tokenBalance = balances[sellToken.address.toLowerCase()]?.balance || "0";
+    const hasInsufficientBalance = new BigNumber(sellAmount).gt(new BigNumber(tokenBalance));
+    setIsInsufficientBalance(hasInsufficientBalance);
+  };
 
   // check if approval is needed
   const checkApprovalNeeded = async (tokenAddress, spender, amount) => {
@@ -319,7 +334,7 @@ const SwapComponent = () => {
       });
       return;
     }
-
+    
     // Input validation
     if (!sellAmount || sellAmount.isNaN() || sellAmount.lte(0)) {
       notification.error({
@@ -524,6 +539,7 @@ const SwapComponent = () => {
       setEffectAmount(toNormalUnit(buyAmount, buyToken.decimals));
     else
       setBuyAmount(new BigNumber(0));
+    checkBalance()
   };
 
   // Function to check if a token is disabled
@@ -602,7 +618,7 @@ const SwapComponent = () => {
             </Button>
           </div>
           <Text className="balance-text">
-            Balance: <span className="balance-value">{getBalanceForToken(sellToken.address)}</span>
+            Balance: <span className="balance-value">{getBalanceForToken(buyToken.address)}</span>
           </Text>
         </Card>
 
@@ -622,8 +638,14 @@ const SwapComponent = () => {
           </div>
         )}
 
-        <Button className="swap-button ant-btn ant-btn-primary" type="primary" onClick={handleSwap} icon={<SwapOutlined />}>
-          {isApprovalNeeded ? 'Approve Required' : 'Swap'}
+        <Button 
+          className="swap-button ant-btn ant-btn-primary" 
+          type="primary" 
+          onClick={handleSwap} 
+          icon={<SwapOutlined />}
+          disabled={isInsufficientBalance}
+        >
+          {isInsufficientBalance ? 'Insufficient Balance' : (isApprovalNeeded ? 'Approve Required' : 'Swap')}
         </Button>
         {/* Collapsible Settings Panel */}
         <AdvancedSettings />

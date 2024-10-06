@@ -136,6 +136,15 @@
   color: white !important;
 }
 
+.swap-button.ant-btn-primary:disabled {
+  background-color: #d9d9d9 !important;
+  border-color: #d9d9d9 !important;
+  color: rgba(0, 0, 0, 0.25) !important;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 .transaction-history-container {
   border: 1px solid #d9d9d9;
   border-radius: 8px;

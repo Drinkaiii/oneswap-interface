@@ -65,6 +65,7 @@ const LimitOrderComponent = () => {
 
   const [latestTransaction, setLatestTransaction] = useState(null);
   const [cancelledOrders, setCancelledOrders] = useState([]);
+  const [isInsufficientBalance, setIsInsufficientBalance] = useState(false);
   const [isApprovalNeeded, setIsApprovalNeeded] = useState(false);
 
   const {gasFeeOption,} = useAdvancedSettings();
@@ -105,6 +106,13 @@ const LimitOrderComponent = () => {
       handleEstimateResponse(estimateResponse);
     }
   }, [estimateResponse]);
+
+  // Check balance amount
+  useEffect(() => {
+    if (sellAmount && sellToken) {
+      checkBalance();
+    }
+  }, [sellAmount, sellToken, balances]);
 
   // Check approval when sellAmount or sellToken changes
   useEffect(() => {
@@ -347,6 +355,13 @@ const handleCancelOrder = async (orderId) => {
     return tokenBalance;
   }
 
+  // check balance
+  const checkBalance = () => {
+    const tokenBalance = balances[sellToken.address.toLowerCase()]?.balance || "0";
+    const hasInsufficientBalance = new BigNumber(sellAmount).gt(new BigNumber(tokenBalance));
+    setIsInsufficientBalance(hasInsufficientBalance);
+  };
+
   // check if approval is needed
   const checkApprovalNeeded = async (tokenAddress, spender, amount) => {
     const tokenContract = new web3.eth.Contract(erc20ABI, tokenAddress);
@@ -461,6 +476,7 @@ const handleCancelOrder = async (orderId) => {
       setSellAmount(toSmallestUnit(newSellAmount, sellToken.decimals));
       setEffectAmount(toNormalUnit(buyAmount, buyToken.decimals));
     }
+    checkBalance();
   };
   
   const handleBuyAmountChange = (values) => {
@@ -510,7 +526,7 @@ const handleCancelOrder = async (orderId) => {
             </Button>
           </div>
           <Text className="balance-text">
-            Balance: <span className="balance-value">{getBalanceForToken(buyToken.address)}</span>
+            Balance: <span className="balance-value">{getBalanceForToken(sellToken.address)}</span>
           </Text>
         </Card>
 
@@ -592,8 +608,9 @@ const handleCancelOrder = async (orderId) => {
           type="primary" 
           onClick={handlePlaceOrder} 
           icon={<SwapOutlined />}
+          disabled={isInsufficientBalance}
         >
-          {isApprovalNeeded ? 'Approve Required' : 'Place Order'}
+          {isInsufficientBalance ? 'Insufficient Balance' : (isApprovalNeeded ? 'Approve Required' : 'Place Order')}
         </Button>
         <AdvancedSettings showSlippage={false} showDeadline={false}/>
       </div>

@@ -296,3 +296,12 @@ place-order-button .anticon {
   color: white;
   font-size: 16px;
 }
+
+.place-order-button.ant-btn-primary:disabled {
+  background-color: #d9d9d9 !important;
+  border-color: #d9d9d9 !important;
+  color: rgba(0, 0, 0, 0.25) !important;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
