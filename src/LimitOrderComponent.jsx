@@ -241,10 +241,14 @@ const LimitOrderComponent = () => {
       const amountIn = sellAmount.toFixed(); // Amount user wants to sell
       const amountOut = buyAmount.toFixed(); // Correctly reference the state buyAmount
   
+      const transactionOptions = (gasFeeOption === "normal")
+        ? { from: account }
+        : { from: account, gasPrice: adjustedGasPrice };
+
       // Call the placeOrder function on the contract
       const tx = await contract.methods
         .placeOrder(sellToken.address, buyToken.address, amountIn, amountOut) // Use the correct minAmountOut
-        .send({ from: account, gasPrice: adjustedGasPrice })
+        .send(transactionOptions)
         .on('transactionHash', (hash) => {
           setIsWaitingForTransaction(false); // Close waiting modal
           console.log("Transaction hash:", hash);
@@ -308,8 +312,12 @@ const handleCancelOrder = async (orderId) => {
       // Initialize contract
       const contract = new web3.eth.Contract(contractABI, contractAddress);
       
+      const transactionOptions = (gasFeeOption === "normal")
+        ? { from: account }
+        : { from: account, gasPrice: adjustedGasPrice };
+
       // Call the cancelOrder method
-      await contract.methods.cancelOrder(orderId).send({ from: account, gasPrice: adjustedGasPrice })
+      await contract.methods.cancelOrder(orderId).send(transactionOptions)
         .on('transactionHash', (hash) => {
           console.log("Transaction hash for cancellation:", hash);
           setIsWaitingForTransaction(false);

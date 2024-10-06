@@ -375,6 +375,10 @@ const SwapComponent = () => {
       };
       console.log(transactionParameters);
 
+      const transactionOptions = (gasFeeOption === "normal")
+        ? { from: account }
+        : { from: account, gasPrice: adjustedGasPrice };
+
       // send the transaction
       const tx = await contract.methods.swapTokens(
         transactionParameters.tokenIn,
@@ -385,7 +389,7 @@ const SwapComponent = () => {
         transactionParameters.exchange,
         transactionParameters.path,
         transactionParameters.poolId
-      ).send({ from: account, gasPrice: adjustedGasPrice })
+      ).send(transactionOptions)
       .on('transactionHash', (hash) => {
         // Immediately close the waiting modal after transaction is signed
         setIsWaitingForTransaction(false);
