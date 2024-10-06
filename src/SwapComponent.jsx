@@ -638,7 +638,7 @@ const SwapComponent = () => {
                 />
               </Tooltip>
             </div>
-            <Text className="estimate-text">Min Amount Get: {toNormalUnit(minAmountOut,18)}</Text>
+            <Text className="estimate-text">Min Amount Get: {toNormalUnit(minAmountOut,18)}{" " + buyToken.symbol}</Text>
           </div>
         )}
 

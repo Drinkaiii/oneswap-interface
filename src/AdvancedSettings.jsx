@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
-import { Collapse, Typography, Slider, InputNumber, Radio, Space } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Collapse, Typography, Slider, InputNumber, Radio, Space, Tooltip } from 'antd';
+import { DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import './AdvancedSettings.css';
 
 const { Panel } = Collapse;
@@ -62,6 +62,9 @@ const AdvancedSettings = ({ showSlippage = true, showDeadline = true }) => {
       {showSlippage && (
         <div className="slippage-control">
           <Text className="slippage-label">Slippage: {slippage}%</Text>
+          <Tooltip title="Slippage is the difference between the expected price of a trade and the price at which the trade is executed.">
+            <InfoCircleOutlined className="setting-info-icon" />
+          </Tooltip>
           <Slider
             className="slippage-slider"
             min={0.1}
@@ -75,7 +78,12 @@ const AdvancedSettings = ({ showSlippage = true, showDeadline = true }) => {
       <div className="settings-content">
         {showDeadline && (
           <div className="setting-item">
-            <Text className="setting-label">Deadline (minutes)</Text>
+            <div>
+              <Text className="setting-label">Deadline (minutes)</Text>
+              <Tooltip title="The deadline sets a time limit for your transaction to be processed.">
+                <InfoCircleOutlined className="setting-info-icon" />
+              </Tooltip>
+            </div>
             <InputNumber
               min={1}
               max={60}

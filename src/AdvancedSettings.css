@@ -143,3 +143,13 @@
 .gas-fee-radio-group .ant-radio-button-wrapper {
   margin-bottom: 8px;
 }
+
+.setting-info-icon {
+  background: none;
+  border: none;
+  padding: 4px;
+  margin-left: 5px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.45);
+  transition: color 0.3s;
+}
