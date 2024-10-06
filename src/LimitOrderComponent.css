@@ -199,14 +199,45 @@
   background-color: #f0f2f5;
 }
 
+/* token-selection modal */
+
 .token-selection-modal .select-token-list-item {
-  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  transition: background-color 0.3s;
 }
 
-.token-selection-modal .token-name {
-  font-size: 25px;
-  margin-right: 10px;
+.token-selection-modal
+  .select-token-list-item:hover:not([style*="cursor: not-allowed"]) {
+  background-color: rgba(0, 0, 0, 0.05);
 }
+
+.token-selection-modal .token-icon-name {
+  display: flex;
+  align-items: center;
+  width: 150px;
+}
+
+.token-selection-modal .token-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+}
+
+.token-selection-modal .token-symbol {
+  font-size: 25px;
+  font-weight: 400;
+}
+
+.token-selection-modal .token-balance {
+  flex: 1;
+  text-align: right;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+/* waiting modal */
 
 .waiting-modal-title,
 .waiting-modal-footer,

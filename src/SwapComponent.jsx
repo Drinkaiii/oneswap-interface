@@ -526,6 +526,12 @@ const SwapComponent = () => {
       setBuyAmount(new BigNumber(0));
   };
 
+  // Function to check if a token is disabled
+  const isTokenDisabled = (token) => {
+    return (isSelectingSell && token.address === buyToken.address) ||
+           (!isSelectingSell && token.address === sellToken.address);
+  };
+
   return (
     <div className="swap-container">
       <div className="swap-card">
@@ -685,10 +691,21 @@ const SwapComponent = () => {
           className="select-token-list"
           dataSource={availableTokens}
           renderItem={(item) => (
-            <List.Item className="select-token-list-item" onClick={() => handleTokenSelect(item)}>
-              {tokenIcons[item.symbol] && <img className="token-icon" src={tokenIcons[item.symbol]} alt={item.symbol} />}
-              <Text className="token-name">{item.symbol}</Text> 
-              <Text className="token-balance">Balance: {getBalanceForToken(item.address)}</Text>
+            <List.Item 
+              className="select-token-list-item" 
+              onClick={() => !isTokenDisabled(item) && handleTokenSelect(item)}
+              style={{ 
+                cursor: isTokenDisabled(item) ? 'not-allowed' : 'pointer',
+                opacity: isTokenDisabled(item) ? 0.5 : 1
+              }}
+            >
+              <div className="token-icon-name">
+                {tokenIcons[item.symbol] && <img className="token-icon" src={tokenIcons[item.symbol]} alt={item.symbol} />}
+                <Text className="token-symbol">{item.symbol}</Text>
+              </div>
+              <Text className="token-balance">
+                {isTokenDisabled(item) ? '(Already selected)' : `Balance: ${getBalanceForToken(item.address)}`}
+              </Text>
             </List.Item>
           )}
         />
