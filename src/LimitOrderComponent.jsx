@@ -273,6 +273,9 @@ const LimitOrderComponent = () => {
                 description: 'Your order has been placed successfully.',
                 placement: 'topRight'
             });
+
+            // Update balances after successful transaction
+            updateBalances();
         })
         .on('error', (error) => {
           console.error("Transaction Error:", error);
@@ -333,6 +336,9 @@ const handleCancelOrder = async (orderId) => {
           
           // Add the cancelled order ID to the state
           setCancelledOrders(prev => [...prev, orderId]);
+
+          // Update balances after successful transaction
+          updateBalances();
         })
         .on('error', (error) => {
           console.error("Cancellation Error:", error);
@@ -500,6 +506,16 @@ const handleCancelOrder = async (orderId) => {
   const handleMaxClick = (token, callback) => {
     const balance = getBalanceForToken(token.address);
     callback(balance);
+  };
+
+  const updateBalances = () => {
+    if (account) {
+      setBalancesLoading(true);
+      fetchAccountBalances(account, (newBalances) => {
+        setBalances(newBalances);
+        setBalancesLoading(false);
+      });
+    }
   };
 
   return (

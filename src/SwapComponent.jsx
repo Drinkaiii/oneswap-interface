@@ -402,6 +402,8 @@ const SwapComponent = () => {
           description: 'Your transaction has been confirmed successfully.',
           placement: 'topRight'
         });
+        // Update balances after successful transaction
+        updateBalances();
       })
       .on('error', (error) => {
         console.error("Transaction Error:", error);
@@ -546,6 +548,16 @@ const SwapComponent = () => {
   const handleMaxClick = (token, callback) => {
     const balance = getBalanceForToken(token.address);
     callback(balance);
+  };
+
+  const updateBalances = () => {
+    if (account) {
+      setBalancesLoading(true);
+      fetchAccountBalances(account, (newBalances) => {
+        setBalances(newBalances);
+        setBalancesLoading(false);
+      });
+    }
   };
 
   return (
