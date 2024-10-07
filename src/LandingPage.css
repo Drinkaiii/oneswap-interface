@@ -33,8 +33,18 @@ html {
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
-  background-color: rgba(7, 59, 76, 0.8);
+  background-color: var(--dark-blue-darker);
   z-index: 1000;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 50px;
+  margin-right: 10px;
 }
 
 .landing-title {
@@ -99,7 +109,7 @@ html {
 }
 
 .hero-title {
-  font-size: 48px;
+  font-size: 60px;
   margin-bottom: 20px;
 }
 

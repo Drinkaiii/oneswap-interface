@@ -55,7 +55,11 @@ const LandingPage = () => {
   return (
     <div className="landing-page">
       <header className="landing-header">
-        <h1 className="landing-title">Oneswap</h1>
+        <div className="logo-container">
+          {/* <img src="/favicon.png" alt="Oneswap Logo" className="logo-picture" /> */}
+          <img src="/Oneswap_logo_text.png" alt="Oneswap Logo" className="logo" />
+          {/* <h1 className="landing-title">Oneswap</h1> */}
+        </div>
         <Link to="/swap" className="launch-button ant-btn ant-btn-primary">Launch App</Link>
       </header>
 
