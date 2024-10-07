@@ -10,6 +10,19 @@ export function toNormalUnit(amount, decimals) {
   return Number(bigNumberAmount.div(factor).toPrecision(15));
 }
 
+export function toNatureUnit(amount, decimals, displayDecimals) {
+  if (amount === "") return "";
+  const bigNumberAmount = BigNumber.isBigNumber(amount) ? amount : new BigNumber(amount);
+  const factor = new BigNumber(10).pow(decimals);
+  const result = bigNumberAmount.div(factor);
+  
+  if (displayDecimals !== undefined) {
+    return result.toFixed(displayDecimals);
+  }
+  
+  return result.toString();
+}
+
 // convert to the smallest unit
 export function toSmallestUnit(amount, decimals) {
   const bigNumberAmount = BigNumber.isBigNumber(amount) ? amount : new BigNumber(amount);

@@ -8,7 +8,7 @@ import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
 import ExchangeRateCardList from './ExchangeRateCardList';
 import TransactionHistory from './TransactionHistory';
-import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toSmallestUnit } from './utils';
+import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toNatureUnit, toSmallestUnit } from './utils';
 import AdvancedSettings, { useAdvancedSettings } from './AdvancedSettings';
 import './SwapComponent.css';
 
@@ -509,7 +509,7 @@ const SwapComponent = () => {
   const formatGasPrice = (price) => {
     if (!price) return 'N/A';
     try {
-      return `${toNormalUnit(price, 9)} Gwei`;
+      return `${toNatureUnit(price, 9)} Gwei`;
     } catch (error) {
       console.error('Error formatting gas price:', error);
       return 'N/A';
@@ -531,7 +531,7 @@ const SwapComponent = () => {
     const sellAmountSmallestUnit = toSmallestUnit(newSellAmount, sellToken.decimals);
     setSellAmount(sellAmountSmallestUnit);
     if (sellAmountSmallestUnit.isGreaterThan(0)) 
-      setEffectAmount(toNormalUnit(buyAmount, buyToken.decimals));
+      setEffectAmount(toNatureUnit(buyAmount, buyToken.decimals));
     else
       setBuyAmount(new BigNumber(0));
     checkBalance()
@@ -552,7 +552,7 @@ const SwapComponent = () => {
           <div className="token-input">
             <NumericFormat
               className="amount-input"
-              value={toNormalUnit(sellAmount, sellToken.decimals).toString()}
+              value={toNatureUnit(sellAmount, sellToken.decimals)}
               onValueChange={handleSellAmountChange}
               thousandSeparator={true}
               decimalScale={sellToken.decimals}
@@ -583,7 +583,7 @@ const SwapComponent = () => {
               {balancesLoading ? (
                 <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
               ) : (
-                toNormalUnit(getBalanceForToken(sellToken.address),sellToken.decimals)
+                toNatureUnit(getBalanceForToken(sellToken.address), sellToken.decimals, 4)
               )}
             </span>
           </Text>
@@ -602,7 +602,7 @@ const SwapComponent = () => {
             <div className="amount-display">
               <CountUp 
                 start={effectAmount}
-                end={toNormalUnit(buyAmount,18)}
+                end={parseFloat(toNatureUnit(buyAmount, buyToken.decimals))}
                 duration={1.2}
                 decimals={3}
               />
@@ -626,7 +626,7 @@ const SwapComponent = () => {
               {balancesLoading ? (
                 <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
               ) : (
-                toNormalUnit(getBalanceForToken(buyToken.address),buyToken.decimals)
+                toNatureUnit(getBalanceForToken(buyToken.address),buyToken.decimals, 4)
               )}
             </span>
           </Text>
@@ -644,7 +644,7 @@ const SwapComponent = () => {
                 />
               </Tooltip>
             </div>
-            <Text className="estimate-text">Min Amount Get: {toNormalUnit(minAmountOut,18)}{" " + buyToken.symbol}</Text>
+            <Text className="estimate-text">Min Amount Get: {toNatureUnit(minAmountOut, buyToken.decimals, 6)}{" " + buyToken.symbol}</Text>
           </div>
         )}
 
@@ -736,7 +736,7 @@ const SwapComponent = () => {
                 <Text className="token-symbol">{item.symbol}</Text>
               </div>
               <Text className="token-balance">
-                {isTokenDisabled(item) ? '(Already selected)' : `Balance: ${toNormalUnit(getBalanceForToken(item.address), item.decimals)}`}
+                {isTokenDisabled(item) ? '(Already selected)' : `Balance: ${toNatureUnit(getBalanceForToken(item.address), item.decimals, 4)}`}
               </Text>
             </List.Item>
           )}

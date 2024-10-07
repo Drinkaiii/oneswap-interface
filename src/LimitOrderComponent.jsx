@@ -7,7 +7,7 @@ import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
 import LimitOrderHistory  from './LimitOrderHistory';
-import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toSmallestUnit } from './utils';
+import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toNatureUnit, toSmallestUnit } from './utils';
 import AdvancedSettings, { useAdvancedSettings } from './AdvancedSettings';
 import './LimitOrderComponent.css';
 
@@ -476,7 +476,7 @@ const handleCancelOrder = async (orderId) => {
     } else {
       const newSellAmount = new BigNumber(value);
       setSellAmount(toSmallestUnit(newSellAmount, sellToken.decimals));
-      setEffectAmount(toNormalUnit(buyAmount, buyToken.decimals));
+      setEffectAmount(toNatureUnit(buyAmount, buyToken.decimals));
     }
     checkBalance();
   };
@@ -506,7 +506,7 @@ const handleCancelOrder = async (orderId) => {
           <div className="token-input">
             <NumericFormat
               className="amount-input"
-              value={toNormalUnit(sellAmount, sellToken.decimals).toString()}
+              value={toNatureUnit(sellAmount, sellToken.decimals)}
               onValueChange={handleSellAmountChange}
               thousandSeparator={true}
               decimalScale={sellToken.decimals}
@@ -536,7 +536,7 @@ const handleCancelOrder = async (orderId) => {
               {balancesLoading ? (
                 <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
               ) : (
-                toNormalUnit(getBalanceForToken(sellToken.address),sellToken.decimals)
+                toNatureUnit(getBalanceForToken(sellToken.address), sellToken.decimals, 4)
               )}
             </span>
           </Text>
@@ -555,7 +555,7 @@ const handleCancelOrder = async (orderId) => {
           <div className="token-input">
             <NumericFormat
               className="amount-input"
-              value={toNormalUnit(buyAmount, buyToken.decimals).toString()}
+              value={toNatureUnit(buyAmount, buyToken.decimals)}
               onValueChange={handleBuyAmountChange}
               thousandSeparator={true}
               decimalScale={buyToken.decimals}
@@ -585,7 +585,7 @@ const handleCancelOrder = async (orderId) => {
               {balancesLoading ? (
                 <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
               ) : (
-                toNormalUnit(getBalanceForToken(buyToken.address),buyToken.decimals)
+                toNatureUnit(getBalanceForToken(buyToken.address),buyToken.decimals, 4)
               )}
             </span>
           </Text>
@@ -598,7 +598,7 @@ const handleCancelOrder = async (orderId) => {
             <div className="estimate-amount">
               <CountUp 
                 start={effectAmount}
-                end={toNormalUnit(estimateAmount, 18)}
+                end={parseFloat(toNatureUnit(estimateAmount, buyToken.decimals))}
                 duration={1.2}
                 decimals={3}
               />
@@ -672,7 +672,7 @@ const handleCancelOrder = async (orderId) => {
                 <Text className="token-symbol">{item.symbol}</Text>
               </div>
               <Text className="token-balance">
-                {isTokenDisabled(item) ? '(Already selected)' : `Balance: ${toNormalUnit(getBalanceForToken(item.address), item.decimals)}`}
+                {isTokenDisabled(item) ? '(Already selected)' : `Balance: ${toNatureUnit(getBalanceForToken(item.address), item.decimals, 4)}`}
               </Text>
             </List.Item>
           )}
