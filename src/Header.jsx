@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { Layout, Menu, Button, Modal, notification, Space, Typography, Tooltip, Spin } from 'antd';
-import { CopyOutlined, LoadingOutlined, LinkOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { CopyOutlined, LoadingOutlined, GlobalOutlined } from '@ant-design/icons';
+import { Link, useLocation } from 'react-router-dom';
 import { WalletContext } from './WalletProvider';
 import { useWebSocket } from './WebSocketProvider';
 import Web3 from 'web3';
@@ -10,6 +10,10 @@ const { Header } = Layout;
 const { Paragraph } = Typography;
 
 const AppHeader = () => {
+
+  const location = useLocation();
+  const [selectedKey, setSelectedKey] = useState(getSelectedKey(location.pathname));
+
   const { account, connectWallet, disconnectWallet, switchWallet, errorMessage } = useContext(WalletContext);
   const { gasPrice } = useWebSocket();
   const [formattedGasPrice, setFormattedGasPrice] = useState();
@@ -17,6 +21,10 @@ const AppHeader = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const walletButtonRef = useRef(null);
   const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
+  
+  useEffect(() => {
+    setSelectedKey(getSelectedKey(location.pathname));
+  }, [location]);
 
   useEffect(() => {
     if (errorMessage) {
@@ -56,6 +64,13 @@ const AppHeader = () => {
     { key: '1', label: <Link to="/swap">Swap</Link> },
     { key: '2', label: <Link to="/limit">Limit</Link> },
   ];
+
+  // for select key initialization
+  function getSelectedKey(pathname){
+    if (pathname.includes('/swap')) return '1';
+    if (pathname.includes('/limit')) return '2';
+    return '1'; // default is Swap page
+  };
 
   const shortenAddress = (address) => {
     if (!address) return '';
@@ -123,7 +138,7 @@ const AppHeader = () => {
               </Tooltip>
               <Tooltip title="View on Etherscan">
                 <Button
-                  icon={<LinkOutlined />}
+                  icon={<GlobalOutlined />}
                   onClick={() => window.open(etherscanUrl, '_blank')}
                   type="text"
                   className="action-button"
@@ -150,7 +165,7 @@ const AppHeader = () => {
         className="app-menu" 
         theme="dark" 
         mode="horizontal" 
-        defaultSelectedKeys={['1']} 
+        selectedKeys={[selectedKey]}
         items={menuItems}
       />
       <div className="header-right">
