@@ -447,9 +447,12 @@ const SwapComponent = () => {
               },
               amountIn: decodedEvent.amountIn.toString(),
               amountOut: decodedEvent.amountOut.toString(),
-              exchanger: decodedEvent.exchange,
+              exchanger: Number(decodedEvent.exchange.toString()),
               createdAt: new Date().toISOString(),
             };
+            console.log(newTransaction);
+            console.log(newTransaction.exchanger);
+            console.log(decodedEvent);
             setLatestTransaction(newTransaction);
           }
         });
