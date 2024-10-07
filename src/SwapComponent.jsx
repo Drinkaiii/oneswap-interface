@@ -190,6 +190,7 @@ const SwapComponent = () => {
 
   // check balance
   const checkBalance = () => {
+    console.log(sellAmount.toFixed());
     const tokenBalance = balances[sellToken.address.toLowerCase()]?.balance || "0";
     const hasInsufficientBalance = new BigNumber(sellAmount).gt(new BigNumber(tokenBalance));
     setIsInsufficientBalance(hasInsufficientBalance);
@@ -534,13 +535,17 @@ const SwapComponent = () => {
       setEffectAmount(toNatureUnit(buyAmount, buyToken.decimals));
     else
       setBuyAmount(new BigNumber(0));
-    checkBalance()
   };
 
   // Function to check if a token is disabled
   const isTokenDisabled = (token) => {
     return (isSelectingSell && token.address === buyToken.address) ||
            (!isSelectingSell && token.address === sellToken.address);
+  };
+
+  const handleMaxClick = (token, callback) => {
+    const balance = getBalanceForToken(token.address);
+    callback(balance);
   };
 
   return (
@@ -578,15 +583,18 @@ const SwapComponent = () => {
               {sellToken.symbol}
             </Button>
           </div>
-          <Text className="balance-text">
-            Balance: <span className="balance-value">
-              {balancesLoading ? (
-                <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
-              ) : (
-                toNatureUnit(getBalanceForToken(sellToken.address), sellToken.decimals, 4)
-              )}
-            </span>
-          </Text>
+          <div className="balance-container">
+            <Text className="balance-text">
+              Balance: <span className="balance-value">
+                {balancesLoading ? (
+                  <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
+                ) : (
+                  toNatureUnit(getBalanceForToken(sellToken.address), sellToken.decimals, 4)
+                )}
+              </span>
+            </Text>
+            <Button className="balance-max-button" onClick={() => handleMaxClick(sellToken, setSellAmount)} size="small">Max</Button>
+          </div>
         </Card>
         {/* Switch button */}
         <Button

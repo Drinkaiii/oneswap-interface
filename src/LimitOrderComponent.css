@@ -97,7 +97,44 @@
 }
 
 .balance-text {
+  display: flex;
+  align-items: center;
   color: rgba(0, 0, 0, 0.45);
+}
+
+.balance-value {
+  margin-left: 5px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.balance-value .ant-spin {
+  margin-left: 5px;
+}
+
+.balance-max-button {
+  margin-left: 10px;
+}
+
+.balance-max-button {
+  color: var(--green);
+  font-weight: bold;
+  transition: all 0.1s ease;
+}
+
+.balance-max-button:hover {
+  background-color: var(--green) !important;
+  border-color: var(--green) !important;
+  color: white !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.balance-max-button:active {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .estimate-card {

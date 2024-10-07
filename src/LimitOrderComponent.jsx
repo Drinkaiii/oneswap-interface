@@ -497,6 +497,11 @@ const handleCancelOrder = async (orderId) => {
            (!isSelectingSell && token.address === sellToken.address);
   };
 
+  const handleMaxClick = (token, callback) => {
+    const balance = getBalanceForToken(token.address);
+    callback(balance);
+  };
+
   return (
     <div className="limit-order-container">
       <div className="limit-order-card">
@@ -531,15 +536,18 @@ const handleCancelOrder = async (orderId) => {
               {sellToken.symbol}
             </Button>
           </div>
-          <Text className="balance-text">
-            Balance: <span className="balance-value">
-              {balancesLoading ? (
-                <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
-              ) : (
-                toNatureUnit(getBalanceForToken(sellToken.address), sellToken.decimals, 4)
-              )}
-            </span>
-          </Text>
+          <div className="balance-container">
+            <Text className="balance-text">
+              Balance: <span className="balance-value">
+                {balancesLoading ? (
+                  <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
+                ) : (
+                  toNatureUnit(getBalanceForToken(sellToken.address), sellToken.decimals, 4)
+                )}
+              </span>
+            </Text>
+            <Button className="balance-max-button" onClick={() => handleMaxClick(sellToken, setSellAmount)} size="small">Max</Button>
+          </div>
         </Card>
 
         {/* Switch button */}
