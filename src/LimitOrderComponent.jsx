@@ -351,16 +351,10 @@ const handleCancelOrder = async (orderId) => {
 
   // get user balance
   function getBalanceForToken(tokenAddress) {
-    if (balancesLoading) {
-      return (
-        <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
-      );
-    }
     const tokenData = balances[tokenAddress.toLowerCase()];
     if (!tokenData || !tokenData.balance)
-      return "0.000"; 
-    const tokenBalance = toNormalUnit(tokenData.balance, tokenData.decimals); 
-    return tokenBalance;
+      return new BigNumber(0);
+    return new BigNumber(tokenData.balance);
   }
 
   // check balance
@@ -538,7 +532,13 @@ const handleCancelOrder = async (orderId) => {
             </Button>
           </div>
           <Text className="balance-text">
-            Balance: <span className="balance-value">{getBalanceForToken(sellToken.address)}</span>
+            Balance: <span className="balance-value">
+              {balancesLoading ? (
+                <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
+              ) : (
+                toNormalUnit(getBalanceForToken(sellToken.address),sellToken.decimals)
+              )}
+            </span>
           </Text>
         </Card>
 
@@ -581,7 +581,13 @@ const handleCancelOrder = async (orderId) => {
             </Button>
           </div>
           <Text className="balance-text">
-            Balance: <span className="balance-value">{getBalanceForToken(buyToken.address)}</span>
+            Balance: <span className="balance-value">
+              {balancesLoading ? (
+                <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
+              ) : (
+                toNormalUnit(getBalanceForToken(buyToken.address),buyToken.decimals)
+              )}
+            </span>
           </Text>
         </Card>
 
@@ -666,7 +672,7 @@ const handleCancelOrder = async (orderId) => {
                 <Text className="token-symbol">{item.symbol}</Text>
               </div>
               <Text className="token-balance">
-                {isTokenDisabled(item) ? '(Already selected)' : `Balance: ${getBalanceForToken(item.address)}`}
+                {isTokenDisabled(item) ? '(Already selected)' : `Balance: ${toNormalUnit(getBalanceForToken(item.address), item.decimals)}`}
               </Text>
             </List.Item>
           )}

@@ -296,7 +296,6 @@ const SwapComponent = () => {
 
   // handle response from WebSocket
   const handleEstimateResponse = (data) => {
-    console.log(data);
     if (data.type === 'estimate' && data.status === 'success') {
       const estimateResponse = data.data[selectedExchangeIndex];
       const decimalsOut = estimateResponse.liquidity.decimals1; //doto
@@ -474,16 +473,10 @@ const SwapComponent = () => {
 
   // get user balance
   function getBalanceForToken(tokenAddress) {
-    if (balancesLoading) {
-      return (
-        <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
-      );
-    }
     const tokenData = balances[tokenAddress.toLowerCase()];
     if (!tokenData || !tokenData.balance)
-      return "0.000"; 
-    const tokenBalance = toNormalUnit(tokenData.balance, tokenData.decimals); 
-    return tokenBalance;
+      return new BigNumber(0);
+    return new BigNumber(tokenData.balance);
   }
 
   const showExchangeRateModal = () => {
@@ -586,10 +579,15 @@ const SwapComponent = () => {
             </Button>
           </div>
           <Text className="balance-text">
-            Balance: <span className="balance-value">{getBalanceForToken(sellToken.address)}</span>
+            Balance: <span className="balance-value">
+              {balancesLoading ? (
+                <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
+              ) : (
+                toNormalUnit(getBalanceForToken(sellToken.address),sellToken.decimals)
+              )}
+            </span>
           </Text>
         </Card>
-
         {/* Switch button */}
         <Button
           className="swap-tokens-button"
@@ -624,7 +622,13 @@ const SwapComponent = () => {
             </Button>
           </div>
           <Text className="balance-text">
-            Balance: <span className="balance-value">{getBalanceForToken(buyToken.address)}</span>
+            Balance: <span className="balance-value">
+              {balancesLoading ? (
+                <Spin size="small" indicator={<LoadingOutlined style={{ fontSize: 14, color: 'rgba(0, 0, 0, 0.25)' }} spin />} />
+              ) : (
+                toNormalUnit(getBalanceForToken(buyToken.address),buyToken.decimals)
+              )}
+            </span>
           </Text>
         </Card>
 
@@ -732,7 +736,7 @@ const SwapComponent = () => {
                 <Text className="token-symbol">{item.symbol}</Text>
               </div>
               <Text className="token-balance">
-                {isTokenDisabled(item) ? '(Already selected)' : `Balance: ${getBalanceForToken(item.address)}`}
+                {isTokenDisabled(item) ? '(Already selected)' : `Balance: ${toNormalUnit(getBalanceForToken(item.address), item.decimals)}`}
               </Text>
             </List.Item>
           )}
