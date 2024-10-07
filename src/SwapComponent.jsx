@@ -566,6 +566,10 @@ const SwapComponent = () => {
               allowNegative={false}
               placeholder="0"
               customInput={Input}
+              isAllowed={(values) => {
+                const { value } = values;
+                return value.replace(/[,.-]/g, '').length <= 15;
+              }}
             />
             <Button 
               className="token-select-button"

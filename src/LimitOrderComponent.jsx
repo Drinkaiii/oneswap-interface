@@ -518,6 +518,10 @@ const handleCancelOrder = async (orderId) => {
               decimalScale={sellToken.decimals}
               allowNegative={false}
               placeholder="0"
+              isAllowed={(values) => {
+                const { value } = values;
+                return value.replace(/[,.-]/g, '').length <= 15;
+              }}
             />
             <Button 
               className="token-select-button"
@@ -554,9 +558,13 @@ const handleCancelOrder = async (orderId) => {
               value={toNormalUnit(buyAmount, buyToken.decimals).toString()}
               onValueChange={handleBuyAmountChange}
               thousandSeparator={true}
-              decimalScale={sellToken.decimals}
+              decimalScale={buyToken.decimals}
               allowNegative={false}
               placeholder="0"
+              isAllowed={(values) => {
+                const { value } = values;
+                return value.replace(/[,.-]/g, '').length <= 15;
+              }}
             />
             <Button 
               className="token-select-button"

@@ -43,6 +43,13 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
       
       if (!response.ok)
         throw new Error('Failed to fetch order history');
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        setOrderHistory([]);
+        return;
+      }
+
       const data = await response.json();
       setOrderHistory(data); // Save the history in the state
     } catch (error) {

@@ -7,7 +7,7 @@ export function toNormalUnit(amount, decimals) {
   if (amount === "") return "";
   const bigNumberAmount = BigNumber.isBigNumber(amount) ? amount : new BigNumber(amount);
   const factor = new BigNumber(10).pow(decimals);
-  return Number(bigNumberAmount.div(factor).toPrecision(10));
+  return Number(bigNumberAmount.div(factor).toPrecision(15));
 }
 
 // convert to the smallest unit
