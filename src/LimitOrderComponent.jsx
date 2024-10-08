@@ -3,6 +3,7 @@ import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notificatio
 import { SwapOutlined, LoadingOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { NumericFormat } from 'react-number-format';
+import { useTokens } from './TokenProvider';
 import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
@@ -13,12 +14,12 @@ import './LimitOrderComponent.css';
 
 const { Text } = Typography;
 
-const availableTokens = [
-    { symbol: 'ETH', code: 'ethereum', decimals: 18, address: "0xa3127E9B960DA8E7b297411728Def559bCaDf9c4" },
-    { symbol: 'WBTC', code: 'wrapped-bitcoin', decimals: 18, address: "0xdE43B354d506Ce213C4bE70B750b5c6AcC09D7CA"},
-    { symbol: 'USDT', code: 'tether', decimals: 18, address: "0x9a34950F069fFB4FD58bbE906f0C36A4c51AAf00" },
-    { symbol: 'ZYDB', code: 'zydb', decimals: 18, address: "0xab0b42Ac6ec6B9B29E55Ba7991887f4C374d2407" }
-  ];
+// const availableTokens = [
+//     { symbol: 'ETH', code: 'ethereum', decimals: 18, address: "0xa3127E9B960DA8E7b297411728Def559bCaDf9c4" },
+//     { symbol: 'WBTC', code: 'wrapped-bitcoin', decimals: 18, address: "0xdE43B354d506Ce213C4bE70B750b5c6AcC09D7CA"},
+//     { symbol: 'USDT', code: 'tether', decimals: 18, address: "0x9a34950F069fFB4FD58bbE906f0C36A4c51AAf00" },
+//     { symbol: 'ZYDB', code: 'zydb', decimals: 18, address: "0xab0b42Ac6ec6B9B29E55Ba7991887f4C374d2407" }
+//   ];
 
 // Contract and ABI
 const contractAddress = "0x08dfC836a3343618ffB412FFaDF3B882cB98852b"; // New Order Contract
@@ -45,6 +46,7 @@ const LimitOrderComponent = () => {
   const { web3, account, connectWallet, errorMessage } = useContext(WalletContext);
   const [balances, setBalances] = useState({});
 
+  const { tokenIcons, availableTokens } = useTokens();
   const [sellToken, setSellToken] = useState(availableTokens[0]);// default: ETH
   const [buyToken, setBuyToken] = useState(availableTokens[1]);// default: BTC
   const [sellAmount, setSellAmount] = useState(new BigNumber("0"));// default: 0
@@ -57,7 +59,7 @@ const LimitOrderComponent = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSelectingSell, setIsSelectingSell] = useState(true);
-  const [tokenIcons, setTokenIcons] = useState({});
+  //const [tokenIcons, setTokenIcons] = useState({});
   // State for waiting modal
   const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
 
@@ -75,9 +77,9 @@ const LimitOrderComponent = () => {
   
 
   // fetch user and token data
-  useEffect(() => {
-    fetchTokenIcons(availableTokens, setTokenIcons);
-  }, []);
+  // useEffect(() => {
+  //   fetchTokenIcons(availableTokens, setTokenIcons);
+  // }, []);
 
   // Fetch user's wallet balance from Worker back-end
   useEffect(() => {

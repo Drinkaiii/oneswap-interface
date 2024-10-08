@@ -4,6 +4,7 @@ import MainContent from './MainContent';
 import AppFooter from './Footer';
 import AppHeader from './Header';
 import LandingPage from './LandingPage';
+import { TokenProvider } from './TokenProvider';
 import { WebSocketProvider } from './WebSocketProvider';
 import WalletProvider from './WalletProvider';
 import './App.css';
@@ -19,11 +20,13 @@ function App() {
             element={
               <WebSocketProvider>
                 <WalletProvider>
-                  <AppHeader />
-                  <main className="Content"> 
-                    <MainContent />
-                  </main>
-                  <AppFooter />
+                  <TokenProvider>
+                    <AppHeader />
+                    <main className="Content"> 
+                      <MainContent />
+                    </main>
+                    <AppFooter />
+                  </TokenProvider>
                 </WalletProvider>
               </WebSocketProvider>
             }
