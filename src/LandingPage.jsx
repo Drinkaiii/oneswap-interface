@@ -67,8 +67,8 @@ const LandingPage = () => {
         <section className="hero-section">
           <div className="hero-background"></div>
           <div className="hero-content">
-            <h2 className="hero-title">One Stop DEX Aggregator</h2>
-            <p className="hero-description">Get the best rates across mutli DEX for ETH, WBTC, USDT, and more.</p>
+            <h2 className="hero-title">One Step DEX Aggregator</h2>
+            <p className="hero-description">Get the best rates across mutli DEX.</p>
             <Button
               className="cta-button"
               type="primary"
@@ -82,7 +82,7 @@ const LandingPage = () => {
         </section>
 
         <section className="supported-tokens-section">
-          <h3 className="section-title">Supported Tokens</h3>
+          {/* <h2 className="section-title">Supported Tokens</h2> */}
           <div className="token-scroll-container">
             <div className="token-list">
               {[...tokens, ...tokens].map((token, index) => (
@@ -99,29 +99,35 @@ const LandingPage = () => {
           <div className="benefit-item">
             <SwapOutlined className="benefit-icon" />
             <h3 className="benefit-title">Connect Wallet</h3>
-            <p className="benefit-description">Securely connect your crypto wallet to start trading</p>
+            <p className="benefit-description">
+              Securely connect crypto wallet to start trading. OneSwap support popular wallets like MetaMask, WalletConnect, and more. This step ensures transactions are authenticated.
+            </p>
           </div>
           <div className="benefit-item">
             <DollarOutlined className="benefit-icon" />
             <h3 className="benefit-title">Choose Tokens</h3>
-            <p className="benefit-description">Select from a wide range of cryptocurrencies including ETH, WBTC, USDT, and ZYDB</p>
+            <p className="benefit-description">
+              Select from a wide range of cryptocurrencies including ETH, WBTC, USDT, and ZYDB. Our platform aggregates prices from multiple DEXes to ensure you get the best rates.
+            </p>
           </div>
           <div className="benefit-item">
             <SafetyOutlined className="benefit-icon" />
             <h3 className="benefit-title">Sign Transaction</h3>
-            <p className="benefit-description">Confirm and sign your transaction for instant or limit order trades</p>
+            <p className="benefit-description">
+              Confirm and sign your transaction for spot or limit order trades. Our smart contract ensures your trade is executed at the best available rate across multiple DEXes.
+            </p>
           </div>
         </section>
 
         <section className="testimonial-section">
           <h2 className="section-title">What our customers say</h2>
           <blockquote className="testimonial-quote">
-            "Oneswap made trading across different DEXes so much easier. I always get the best rates!"
+            "OneSwap made trading across different DEXes so much easier. I always get the best rates!"
           </blockquote>
           <div className="testimonial-author">
-            <Avatar src="/path-to-avatar.jpg" size={64} className="author-avatar" />
+            <Avatar src="/KaiLin.png" size={64} className="author-avatar" />
             <div className="author-info">
-              <p className="author-name">Jane Doe</p>
+              <p className="author-name">Kai Lin</p>
               <div className="author-rating">⭐⭐⭐⭐⭐</div>
             </div>
           </div>
