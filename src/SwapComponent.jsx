@@ -82,6 +82,7 @@ const SwapComponent = () => {
   // const [deadlineMinutes, setDeadlineMinutes] = useState(10);
 
   const [hasLiquidity, setHasLiquidity] = useState(true);
+  const [isTransactionInProgress, setIsTransactionInProgress] = useState(false);
 
   const {
     slippage,
@@ -360,6 +361,7 @@ const SwapComponent = () => {
 
     // Show waiting modal
     setIsWaitingForTransaction(true);
+    setIsTransactionInProgress(true);
 
     // check and ensure approval
     if (checkApprovalNeeded)
@@ -417,11 +419,13 @@ const SwapComponent = () => {
         });
         // Update balances after successful transaction
         updateBalances();
+        setIsTransactionInProgress(false);
       })
       .on('error', (error) => {
         console.error("Transaction Error:", error);
         // Hide the modal in case of an error
         setIsWaitingForTransaction(false);
+        setIsTransactionInProgress(false);
         // Show an error notification
         notification.error({
           message: 'Transaction Failed',
@@ -474,10 +478,12 @@ const SwapComponent = () => {
       } else {
         console.error("TradeExecuted event ABI not found");
         setIsWaitingForTransaction(false); // Hide waiting modal when done
+        setIsTransactionInProgress(false);
       }
     } catch (error) {
       console.error("Error while swapping tokens:", error);
       setIsWaitingForTransaction(false); // Hide waiting modal on error
+      setIsTransactionInProgress(false);
       // Show an error notification
       notification.error({
         message: 'Transaction Failed',
@@ -574,6 +580,9 @@ const SwapComponent = () => {
   };
 
   const getButtonText = () => {
+    if (isTransactionInProgress) {
+      return <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: 'var(--green)' }} spin />} />;
+    }
     if (!hasLiquidity) return 'No Liquidity';
     if (isInsufficientBalance) return 'Insufficient Balance';
     if (isApprovalNeeded) return 'Approve Required';
@@ -698,8 +707,8 @@ const SwapComponent = () => {
           className="swap-button ant-btn ant-btn-primary" 
           type="primary" 
           onClick={handleSwap} 
-          icon={<SwapOutlined />}
-          disabled={isInsufficientBalance || !hasLiquidity}
+          icon={!isTransactionInProgress && <SwapOutlined />}
+          disabled={isInsufficientBalance || !hasLiquidity || isTransactionInProgress}
         >
           {getButtonText()}
         </Button>
@@ -809,7 +818,7 @@ const SwapComponent = () => {
         className="waiting-modal"
       >
         <div className="waiting-modal-content">
-          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 , color: 'var(--green)'}} spin />} />
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 70, color: 'var(--green)'}} spin />} />
           <p>Please sign the transaction in your wallet...</p>
         </div>
       </Modal>

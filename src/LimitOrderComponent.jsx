@@ -74,6 +74,7 @@ const LimitOrderComponent = () => {
   const [adjustedGasPrice, setAdjustedGasPrice] = useState(null);
 
   const [balancesLoading, setBalancesLoading] = useState(false);
+  const [isTransactionInProgress, setIsTransactionInProgress] = useState(false);
   
 
   // fetch user and token data
@@ -229,6 +230,7 @@ const LimitOrderComponent = () => {
 
     // Show waiting modal
     setIsWaitingForTransaction(true);
+    setIsTransactionInProgress(true);
 
     // check and ensure approval
     if (checkApprovalNeeded)
@@ -256,32 +258,34 @@ const LimitOrderComponent = () => {
           console.log("Transaction hash:", hash);
         })
         .on('receipt', (receipt) => {
-            console.log("Transaction Success!", receipt);
+          console.log("Transaction Success!", receipt);
 
-            const newTransaction = {
-                orderId: receipt.events.OrderPlaced.returnValues.orderId.toString(),
-                tokenIn: { symbol: sellToken.symbol, decimals: sellToken.decimals },
-                tokenOut: { symbol: buyToken.symbol, decimals: buyToken.decimals },
-                amountIn: amountIn,
-                minAmountOut: amountOut,
-                finalAmountOut: receipt.events.OrderExecuted ? receipt.events.OrderExecuted.returnValues.amountOut : null,
-                status: receipt.events.OrderExecuted ? 'filled' : 'unfilled',
-            };
-            console.log(newTransaction);
-            setLatestTransaction(newTransaction);
+          const newTransaction = {
+              orderId: receipt.events.OrderPlaced.returnValues.orderId.toString(),
+              tokenIn: { symbol: sellToken.symbol, decimals: sellToken.decimals },
+              tokenOut: { symbol: buyToken.symbol, decimals: buyToken.decimals },
+              amountIn: amountIn,
+              minAmountOut: amountOut,
+              finalAmountOut: receipt.events.OrderExecuted ? receipt.events.OrderExecuted.returnValues.amountOut : null,
+              status: receipt.events.OrderExecuted ? 'filled' : 'unfilled',
+          };
+          console.log(newTransaction);
+          setLatestTransaction(newTransaction);
 
-            notification.success({
-                message: 'Order Placed Successfully',
-                description: 'Your order has been placed successfully.',
-                placement: 'topRight'
-            });
+          notification.success({
+              message: 'Order Placed Successfully',
+              description: 'Your order has been placed successfully.',
+              placement: 'topRight'
+          });
 
-            // Update balances after successful transaction
-            updateBalances();
+          // Update balances after successful transaction
+          updateBalances();
+          setIsTransactionInProgress(false);
         })
         .on('error', (error) => {
           console.error("Transaction Error:", error);
           setIsWaitingForTransaction(false); // Hide waiting modal on error
+          setIsTransactionInProgress(false);
           notification.error({
             message: 'Order Failed',
             description: 'There was an error placing your order. Please try again.',
@@ -291,6 +295,7 @@ const LimitOrderComponent = () => {
     } catch (error) {
       console.error("Error while placing order:", error);
       setIsWaitingForTransaction(false); // Hide waiting modal on error
+      setIsTransactionInProgress(false);
       notification.error({
         message: 'Order Failed',
         description: 'There was an error placing your order. Please try again.',
@@ -520,6 +525,15 @@ const handleCancelOrder = async (orderId) => {
     }
   };
 
+  const getButtonText = () => {
+    if (isTransactionInProgress) {
+      return <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: 'var(--green)' }} spin />} />;
+    }
+    if (isInsufficientBalance) return 'Insufficient Balance';
+    if (isApprovalNeeded) return 'Approve Required';
+    return 'Place Order';
+  };
+
   return (
     <div className="limit-order-container">
       <div className="limit-order-card">
@@ -655,10 +669,10 @@ const handleCancelOrder = async (orderId) => {
           className="place-order-button ant-btn ant-btn-primary" 
           type="primary" 
           onClick={handlePlaceOrder} 
-          icon={<SwapOutlined />}
-          disabled={isInsufficientBalance}
+          icon={!isTransactionInProgress && <SwapOutlined />}
+          disabled={isInsufficientBalance || isTransactionInProgress}
         >
-          {isInsufficientBalance ? 'Insufficient Balance' : (isApprovalNeeded ? 'Approve Required' : 'Place Order')}
+          {getButtonText()}
         </Button>
         <AdvancedSettings showSlippage={false} showDeadline={false}/>
       </div>

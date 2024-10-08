@@ -12,6 +12,7 @@ const host = "https://d1edophfzx4z61.cloudfront.net";
 const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders , handleCancelOrder }) => {
   const [orderHistory, setOrderHistory] = useState([]); // State to store order history
   const [isLoading, setIsLoading] = useState(false); // State for loading
+  const [cancellingOrders, setCancellingOrders] = useState({});
 
   // Fetch order history when the component loads
   useEffect(() => {
@@ -58,6 +59,17 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
       console.error("Failed to fetch order history:", error);
     } finally {
       setIsLoading(false); // Stop loading
+    }
+  };
+
+  const handleCancelOrderWithLoading = async (orderId) => {
+    setCancellingOrders(prev => ({ ...prev, [orderId]: true }));
+    try {
+      await handleCancelOrder(orderId);
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+    } finally {
+      setCancellingOrders(prev => ({ ...prev, [orderId]: false }));
     }
   };
 
@@ -141,9 +153,14 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
           return (
             <Button 
               className="history-cancel-order-button"
-              onClick={() => handleCancelOrder(record.orderId)}
+              onClick={() => handleCancelOrderWithLoading(record.orderId)}
+              disabled={cancellingOrders[record.orderId]}
             >
-              Cancel Order
+              {cancellingOrders[record.orderId] ? (
+                <Spin indicator={<LoadingOutlined style={{ fontSize: 16, color: 'var(--red)', margin: '0 15px' }} spin />} />
+              ) : (
+                'Cancel Order'
+              )}
             </Button>
           );
         }
