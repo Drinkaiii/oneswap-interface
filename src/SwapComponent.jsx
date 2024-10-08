@@ -81,7 +81,7 @@ const SwapComponent = () => {
   const [adjustedGasPrice, setAdjustedGasPrice] = useState(null);
   // const [deadlineMinutes, setDeadlineMinutes] = useState(10);
 
-  
+  const [hasLiquidity, setHasLiquidity] = useState(true);
 
   const {
     slippage,
@@ -132,7 +132,7 @@ const SwapComponent = () => {
 
    // Update this useEffect to use the slippage from context
   useEffect(() => {
-    if (estimateResponse && estimateResponse.data[selectedExchangeIndex].amountOut) {
+    if (estimateResponse && estimateResponse.data.length !== 0 && estimateResponse.data[selectedExchangeIndex].amountOut) {
       const amountOutEstimate = new BigNumber(estimateResponse.data[selectedExchangeIndex].amountOut);
       const slippagePercentage = new BigNumber(100).minus(slippage);
       const calculatedMinAmountOut = amountOutEstimate
@@ -143,6 +143,14 @@ const SwapComponent = () => {
       setMinAmountOut(calculatedMinAmountOut);
     }
   }, [estimateResponse, slippage, selectedExchangeIndex]);
+
+  useEffect(() => {
+    if (estimateResponse) {
+      setHasLiquidity(estimateResponse.data.length > 0 && estimateResponse.data[0].amountOut !== "0");
+    } else {
+      setHasLiquidity(false);
+    }
+  }, [estimateResponse]);
 
   // Check balance amount
   useEffect(() => {
@@ -302,7 +310,7 @@ const SwapComponent = () => {
 
   // handle response from WebSocket
   const handleEstimateResponse = (data) => {
-    if (data.type === 'estimate' && data.status === 'success') {
+    if (data.type === 'estimate' && data.status === 'success' && data.data.length !== 0) {
       const estimateResponse = data.data[selectedExchangeIndex];
       const decimalsOut = estimateResponse.liquidity.decimals1; //doto
       setBuyAmount(new BigNumber(estimateResponse.amountOut));
@@ -565,6 +573,13 @@ const SwapComponent = () => {
     }
   };
 
+  const getButtonText = () => {
+    if (!hasLiquidity) return 'No Liquidity';
+    if (isInsufficientBalance) return 'Insufficient Balance';
+    if (isApprovalNeeded) return 'Approve Required';
+    return 'Swap';
+  };
+
   return (
     <div className="swap-container">
       <div className="swap-card">
@@ -660,14 +675,20 @@ const SwapComponent = () => {
         {estimateResponse && (
           <div className="estimate-info">
             <div className="estimate-row">
-              <Text className="estimate-text">{selectedExchangeIndex===0?'Best Exchange':'Exchange'}: {estimateResponse.data[selectedExchangeIndex].liquidity.exchanger}</Text>
-              <Tooltip title="View Other Exchange Rates">
-                <Button 
-                  className="exchange-rate-icon-button"
-                  onClick={showExchangeRateModal}
-                  icon={<SettingOutlined />}
-                />
-              </Tooltip>
+              <Text className="estimate-text">
+                {estimateResponse.data[selectedExchangeIndex]
+                  ? `${selectedExchangeIndex === 0 ? 'Best Exchange' : 'Exchange'}: ${estimateResponse.data[selectedExchangeIndex].liquidity.exchanger}`
+                  : "No liquidity for this token pair."}
+              </Text>
+              {estimateResponse.data.length > 1 && (
+                <Tooltip title="View Other Exchange Rates">
+                  <Button
+                    className="exchange-rate-icon-button"
+                    onClick={showExchangeRateModal}
+                    icon={<SettingOutlined />}
+                  />
+                </Tooltip>
+              )}
             </div>
             <Text className="estimate-text">Min Amount Get: {toNatureUnit(minAmountOut, buyToken.decimals, 6)}{" " + buyToken.symbol}</Text>
           </div>
@@ -678,9 +699,9 @@ const SwapComponent = () => {
           type="primary" 
           onClick={handleSwap} 
           icon={<SwapOutlined />}
-          disabled={isInsufficientBalance}
+          disabled={isInsufficientBalance || !hasLiquidity}
         >
-          {isInsufficientBalance ? 'Insufficient Balance' : (isApprovalNeeded ? 'Approve Required' : 'Swap')}
+          {getButtonText()}
         </Button>
         {/* Collapsible Settings Panel */}
         <AdvancedSettings />

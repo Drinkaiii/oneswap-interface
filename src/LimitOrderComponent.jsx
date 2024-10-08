@@ -169,7 +169,7 @@ const LimitOrderComponent = () => {
 
   // handle response from WebSocket
   const handleEstimateResponse = (data) => {
-    if (data.type === 'estimate' && data.status === 'success') {
+    if (data.type === 'estimate' && data.status === 'success' && data.data.length !== 0) {
       const estimateResponse = data.data[0];
       const decimalsOut = estimateResponse.liquidity.decimals1; //doto
       setEstimateAmount(new BigNumber(estimateResponse.amountOut));
