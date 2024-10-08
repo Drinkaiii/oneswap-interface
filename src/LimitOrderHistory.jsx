@@ -52,6 +52,7 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
       }
 
       const data = await response.json();
+      data.sort((a, b) => new BigNumber(b.orderId).minus(new BigNumber(a.orderId)).toNumber());
       setOrderHistory(data); // Save the history in the state
     } catch (error) {
       console.error("Failed to fetch order history:", error);
@@ -66,8 +67,6 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
       title: 'Order ID',
       dataIndex: 'orderId',
       key: 'orderId',
-      sorter: (a, b) => BigNumber(b.orderId).minus(BigNumber(a.orderId)).toNumber(),
-      defaultSortOrder: 'descend',
     },
     {
       title: 'Status',
