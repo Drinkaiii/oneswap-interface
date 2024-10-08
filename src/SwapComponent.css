@@ -369,7 +369,11 @@
 }
 
 .exchange-rate-icon-button:hover {
-  color: #ef476f;
+  color: var(--green) !important;
+}
+
+.exchange-rate-icon-button:active {
+  color: var(--green-dark) !important;
 }
 
 /* switch token button */

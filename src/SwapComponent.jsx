@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, Input, Modal, List, Typography, Card, Spin, notification, Tooltip } from 'antd';
-import { SwapOutlined, LoadingOutlined, SettingOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { SwapOutlined, LoadingOutlined, SearchOutlined , ArrowDownOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { NumericFormat } from 'react-number-format';
 import { useTokens } from './TokenProvider';
@@ -685,7 +685,7 @@ const SwapComponent = () => {
                   <Button
                     className="exchange-rate-icon-button"
                     onClick={showExchangeRateModal}
-                    icon={<SettingOutlined />}
+                    icon={<SearchOutlined />}
                   />
                 </Tooltip>
               )}

@@ -55,7 +55,11 @@ const ExchangeRateCardList = ({ estimateResponse, onSelectExchange, selectedInde
             borderLeft: index === selectedIndex ? '4px solid #ef476f' : '1px solid #d9d9d9',
             cursor: 'pointer'
           }}
-          bodyStyle={{ padding: '12px 24px' }}
+          styles={{
+            body: {
+              padding: '16px 24px',
+            }
+          }}
           onClick={() => onSelectExchange(index)}
           hoverable
         >
