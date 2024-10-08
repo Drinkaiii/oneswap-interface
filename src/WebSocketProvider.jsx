@@ -49,7 +49,6 @@ export const WebSocketProvider = ({ children }) => {
       stompClient.subscribe('/queue/gas/Sepolia', (message) => {
         const body = JSON.parse(message.body);
         setGasPrice(body.data);
-        console.log('Current gas price:', body.data.toString());
       });
 
       // update sessionId and client

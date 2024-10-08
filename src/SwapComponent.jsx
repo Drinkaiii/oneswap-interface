@@ -204,7 +204,6 @@ const SwapComponent = () => {
 
   // check balance
   const checkBalance = () => {
-    console.log(sellAmount.toFixed());
     const tokenBalance = balances[sellToken.address.toLowerCase()]?.balance || "0";
     const hasInsufficientBalance = new BigNumber(sellAmount).gt(new BigNumber(tokenBalance));
     setIsInsufficientBalance(hasInsufficientBalance);

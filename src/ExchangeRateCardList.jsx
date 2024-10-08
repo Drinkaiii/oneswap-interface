@@ -3,7 +3,6 @@ import { Card, Typography, List } from 'antd';
 import { useTransition, animated } from 'react-spring';
 import { formatTokenAmount } from './utils';
 
-// 導入圖片
 import uniswapLogo from '/Uniswap_logo_pink.svg';
 import balancerLogo from '/balancer-logo-black.svg';
 import defaultLogo from '/question.svg';
@@ -12,7 +11,6 @@ const { Title, Text } = Typography;
 
 const AnimatedCard = animated(Card);
 
-// 獲取交易所 logo 的函數
 const getExchangeLogo = (exchangerName) => {
   switch (exchangerName.toLowerCase()) {
     case 'uniswap':

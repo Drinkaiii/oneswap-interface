@@ -35,10 +35,6 @@
   color: var(--green-dark);
 }
 
-/* .settings-content {
-  padding: 24px;
-} */
-
 .setting-item {
   display: flex;
   justify-content: space-between;
