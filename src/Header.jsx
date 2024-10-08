@@ -209,8 +209,8 @@ const AppHeader = () => {
         open={isWaitingForTransaction}
         footer={
           <div className="waiting-modal-footer">
-            <Button type="text" onClick={() => setIsWaitingForTransaction(false)}>
-              Close Window
+            <Button className="waiting-close-button" type="text" onClick={() => setIsWaitingForTransaction(false)}>
+              Close
             </Button>
           </div>
         }
@@ -219,7 +219,7 @@ const AppHeader = () => {
         className="waiting-modal"
       >
         <div className="waiting-modal-content">
-          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 }} spin />} />
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 70, color: 'var(--green)' }} spin />} />
           <p>Please confirm the connection in your wallet...</p>
         </div>
       </Modal>

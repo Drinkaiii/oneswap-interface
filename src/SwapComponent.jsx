@@ -610,7 +610,7 @@ const SwapComponent = () => {
         </Card>
         {/* Switch button */}
         <Button
-          className="swap-tokens-button"
+          className="switch-tokens-button"
           icon={<ArrowDownOutlined />}
           onClick={handleSwapTokens}
         />
@@ -773,8 +773,8 @@ const SwapComponent = () => {
         open={isWaitingForTransaction}
         footer={
           <div className="waiting-modal-footer">
-            <Button type="text" className="close-button" onClick={() => setIsWaitingForTransaction(false)}>
-              Close Window
+            <Button type="text" className="waiting-close-button" onClick={() => setIsWaitingForTransaction(false)}>
+              Close
             </Button>
           </div>
         }
@@ -783,7 +783,7 @@ const SwapComponent = () => {
         className="waiting-modal"
       >
         <div className="waiting-modal-content">
-          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 }} spin />} />
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 , color: 'var(--green)'}} spin />} />
           <p>Please sign the transaction in your wallet...</p>
         </div>
       </Modal>

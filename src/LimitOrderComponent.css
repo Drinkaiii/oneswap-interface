@@ -91,8 +91,18 @@
   color: black;
 }
 
+.token-select-button:hover {
+  border-color: var(--green) !important;
+  color: var(--green) !important;
+}
+
+.token-select-button:active {
+  border-color: var(--green-dark) !important;
+  color: var(--green-dark) !important;
+}
+
 .token-icon {
-  width: 20px;
+  width: 30px;
   margin-right: 8px;
 }
 
@@ -114,9 +124,8 @@
 
 .balance-max-button {
   margin-left: 10px;
-}
-
-.balance-max-button {
+  border: none;
+  box-shadow: none;
   color: var(--green);
   font-weight: bold;
   transition: all 0.1s ease;
@@ -181,6 +190,16 @@
 .percentage-button {
   margin-right: 10px;
   font-weight: 600;
+}
+
+.percentage-button:hover {
+  border-color: var(--green) !important;
+  color: var(--green) !important;
+}
+
+.percentage-button:active {
+  border-color: var(--green) !important;
+  color: var(--green) !important;
 }
 
 .place-order-button.ant-btn-primary {
@@ -286,6 +305,31 @@
   margin: 50px 0;
 }
 
+.waiting-close-button {
+  color: var(--green-dark);
+  background-color: rgba(6, 214, 160, 0.1);
+  font-weight: bold;
+  width: 80%;
+  height: 50px;
+  transition: all 0.1s ease;
+}
+
+.waiting-close-button:hover {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.waiting-close-buttonn:active {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+  transform: translateY(0);
+  box-shadow: none;
+}
+
 /* 移除所有元素的outline */
 .limit-order-card * {
   outline: none !important;
@@ -295,11 +339,12 @@
   outline: none !important;
 }
 
-/* swithc token button */
+/* switch token button */
 
-place-order-button {
+.switch-tokens-button {
   left: 50%;
   transform: translate(-50%, -50%);
+  color: white;
   width: 32px;
   height: 32px;
   background-color: var(--green) !important;
@@ -310,35 +355,17 @@ place-order-button {
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: background-color 0.1s ease, transform 0.1s ease !important;
+  transition: background-color 0.1s ease;
   z-index: 10;
 }
 
-place-order-button:hover,
-place-order-button:focus {
+.switch-tokens-button:hover {
+  color: white !important;
   background-color: var(--green-dark) !important;
 }
 
-place-order-button:active {
+.switch-tokens-button:active {
   background-color: var(--green-dark) !important;
+  color: white !important;
   transform: translate(-50%, -50%) scale(0.9) !important;
-}
-
-place-order-button:not(:active) {
-  background-color: var(--green) !important;
-  transform: translate(-50%, -50%) !important;
-}
-
-place-order-button .anticon {
-  color: white;
-  font-size: 16px;
-}
-
-.place-order-button.ant-btn-primary:disabled {
-  background-color: #d9d9d9 !important;
-  border-color: #d9d9d9 !important;
-  color: rgba(0, 0, 0, 0.25) !important;
-  cursor: not-allowed;
-  transform: none !important;
-  box-shadow: none !important;
 }

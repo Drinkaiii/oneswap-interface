@@ -568,7 +568,7 @@ const handleCancelOrder = async (orderId) => {
 
         {/* Switch button */}
         <Button
-          className="swap-tokens-button"
+          className="switch-tokens-button"
           icon={<ArrowDownOutlined />}
           onClick={handleSwapTokens}
         />
@@ -713,8 +713,8 @@ const handleCancelOrder = async (orderId) => {
         open={isWaitingForTransaction}
         footer={
           <div className="waiting-modal-footer">
-            <Button type="text" onClick={() => setIsWaitingForTransaction(false)}>
-              Close Window
+            <Button className="waiting-close-button" type="text" onClick={() => setIsWaitingForTransaction(false)}>
+              Close
             </Button>
           </div>
         }
@@ -723,7 +723,7 @@ const handleCancelOrder = async (orderId) => {
         className="waiting-modal"
       >
         <div className="waiting-modal-content">
-          <Spin indicator={<LoadingOutlined style={{ fontSize: 70 }} spin />} />
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 70, color: 'var(--green)' }} spin />} />
           <p>Please sign the transaction in your wallet...</p>
         </div>
       </Modal>

@@ -3,6 +3,7 @@ import { formatTokenAmount } from './utils';
 import { Table, Typography, Spin, Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import BigNumber from 'bignumber.js';
+import './LimitOrderHistory.css';
 
 const { Title, Text } = Typography;
 
@@ -72,7 +73,11 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => <Text type={status === 'filled' ? 'success' : 'warning'}>{status}</Text>,
+      render: (status) => (
+        <Text className={`status-tag status-${status.toLowerCase()}`}>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </Text>
+      ),
     },
     {
       title: 'Sell',
@@ -135,7 +140,10 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
           return 'Canceled';
         } else {
           return (
-            <Button color="primary" variant="filled" onClick={() => handleCancelOrder(record.orderId)}>
+            <Button 
+              className="history-cancel-order-button"
+              onClick={() => handleCancelOrder(record.orderId)}
+            >
               Cancel Order
             </Button>
           );
@@ -145,7 +153,7 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
   ];
 
   return (
-    <div style={{ marginTop: '20px' }}>
+    <div className="limit-order-history">
       <Title level={2}>Order History</Title>
       {isLoading ? (
         <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />

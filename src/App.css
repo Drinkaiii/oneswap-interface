@@ -169,6 +169,33 @@ body,
   color: white !important;
 }
 
+/* waiting style */
+
+.waiting-close-button {
+  color: var(--green-dark);
+  background-color: rgba(6, 214, 160, 0.1);
+  font-weight: bold;
+  width: 80%;
+  height: 50px;
+  transition: all 0.1s ease;
+}
+
+.waiting-close-button:hover {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.waiting-close-buttonn:active {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+  transform: translateY(0);
+  box-shadow: none;
+}
+
 /* Footer styles */
 .app-footer {
   text-align: center;
