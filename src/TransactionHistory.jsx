@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { HOST_URL } from './config';
 import { Typography, Table } from 'antd';
 import BigNumber from 'bignumber.js';
 import { WalletContext } from './WalletProvider';
 import { toNormalUnit, formatTokenAmount } from './utils';
 
 const { Title } = Typography;
-
-const host = "https://d1edophfzx4z61.cloudfront.net";
 
 const TransactionHistory = ({ tokenIcons, latestTransaction }) => {
   const { web3, account } = useContext(WalletContext);
@@ -28,7 +27,7 @@ const TransactionHistory = ({ tokenIcons, latestTransaction }) => {
 
   const fetchTransactionHistory = async () => {
     try {
-      const response = await fetch(`${host}/api/1.0/account/history/transactions?address=${account}`);
+      const response = await fetch(`${HOST_URL}/api/1.0/account/history/transactions?address=${account}`);
       const data = await response.json();
 
       const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { HOST_URL } from './config';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client/dist/sockjs';
 
@@ -6,8 +7,6 @@ import SockJS from 'sockjs-client/dist/sockjs';
 const WebSocketContext = createContext(null);
 
 export const useWebSocket = () => useContext(WebSocketContext);
-
-const host = "https://d1edophfzx4z61.cloudfront.net";
 
 export const WebSocketProvider = ({ children }) => {
 
@@ -22,7 +21,7 @@ export const WebSocketProvider = ({ children }) => {
 
   useEffect(() => {
     // initialize STOMP client
-    const socket = new SockJS(`${host}/ws`);
+    const socket = new SockJS(`${HOST_URL}/ws`);
     const stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,

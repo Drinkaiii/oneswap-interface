@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
-
-const host = "https://d1edophfzx4z61.cloudfront.net";
+import { HOST_URL } from './config';
 
 // convert to normal unit
 export function toNormalUnit(amount, decimals) {
@@ -69,7 +68,7 @@ export const fetchAccountBalances = async (account, setBalances) => {
       return;
     }
     try {
-      const response = await fetch(`${host}/api/1.0/account/info?address=${account}`);
+      const response = await fetch(`${HOST_URL}/api/1.0/account/info?address=${account}`);
       const data = await response.json();
       
       const balanceMap = {};

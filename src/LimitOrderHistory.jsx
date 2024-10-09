@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { HOST_URL } from './config';
 import { formatTokenAmount } from './utils';
 import { Table, Typography, Spin, Button } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -6,8 +7,6 @@ import BigNumber from 'bignumber.js';
 import './LimitOrderHistory.css';
 
 const { Title, Text } = Typography;
-
-const host = "https://d1edophfzx4z61.cloudfront.net";
 
 const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders , handleCancelOrder }) => {
   const [orderHistory, setOrderHistory] = useState([]); // State to store order history
@@ -41,7 +40,7 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
   const fetchOrderHistory = async (address) => {
     setIsLoading(true); // Start loading
     try {
-      const response = await fetch(`${host}/api/1.0/account/history/limitOrders?address=${address}`);
+      const response = await fetch(`${HOST_URL}/api/1.0/account/history/limitOrders?address=${address}`);
       
       if (!response.ok)
         throw new Error('Failed to fetch order history');
