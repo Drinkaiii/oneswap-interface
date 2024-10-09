@@ -606,7 +606,7 @@ const SwapComponent = () => {
               customInput={Input}
               isAllowed={(values) => {
                 const { value } = values;
-                return value.replace(/[,.-]/g, '').length <= 15;
+                return value.replace(/[,.-]/g, '').length <= 18;
               }}
             />
             <Button 

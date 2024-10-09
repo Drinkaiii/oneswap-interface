@@ -551,7 +551,7 @@ const handleCancelOrder = async (orderId) => {
               placeholder="0"
               isAllowed={(values) => {
                 const { value } = values;
-                return value.replace(/[,.-]/g, '').length <= 15;
+                return value.replace(/[,.-]/g, '').length <= 18;
               }}
             />
             <Button 
@@ -603,7 +603,7 @@ const handleCancelOrder = async (orderId) => {
               placeholder="0"
               isAllowed={(values) => {
                 const { value } = values;
-                return value.replace(/[,.-]/g, '').length <= 15;
+                return value.replace(/[,.-]/g, '').length <= 18;
               }}
             />
             <Button 
