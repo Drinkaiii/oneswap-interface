@@ -597,7 +597,7 @@ const SwapComponent = () => {
           <div className="token-input">
             <NumericFormat
               className="amount-input"
-              value={toNatureUnit(sellAmount, sellToken.decimals)}
+              value={sellAmount.isZero() ? '' : toNatureUnit(sellAmount, sellToken.decimals)}
               onValueChange={handleSellAmountChange}
               thousandSeparator={true}
               decimalScale={sellToken.decimals}
