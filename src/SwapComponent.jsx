@@ -606,7 +606,10 @@ const SwapComponent = () => {
               customInput={Input}
               isAllowed={(values) => {
                 const { value } = values;
-                return value.replace(/[,.-]/g, '').length <= 18;
+                const parts = value.split('.');
+                const integerPart = parts[0].replace(/,/g, '');
+                const decimalPart = parts[1] || '';
+                return integerPart.length <= 15 && decimalPart.length <= 18;
               }}
             />
             <Button 
