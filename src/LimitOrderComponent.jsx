@@ -79,6 +79,8 @@ const LimitOrderComponent = () => {
   const [isSellMaxDigits, setIsSellMaxDigits] = useState(false);
   const [isBuyMaxDigits, setIsBuyMaxDigits] = useState(false);
 
+  const [isBelowMarketPrice, setIsBelowMarketPrice] = useState(false);
+
   // fetch user and token data
   // useEffect(() => {
   //   fetchTokenIcons(availableTokens, setTokenIcons);
@@ -155,6 +157,14 @@ const LimitOrderComponent = () => {
     resetEstimateResponse();
     setEstimateAmount(new BigNumber(0));
   }, []);
+
+  useEffect(() => {
+    if (estimateAmount.gt(0) && sellAmount.gt(0) && buyAmount.gt(0)) {
+      setIsBelowMarketPrice(buyAmount.lt(estimateAmount));
+    } else {
+      setIsBelowMarketPrice(false);
+    }
+  }, [estimateAmount, sellAmount, buyAmount]);
   
   // send estimate request by WebSocket
   const sendEstimateRequest = () => {
@@ -543,6 +553,7 @@ const handleCancelOrder = async (orderId) => {
     }
     if (isInsufficientBalance) return 'Insufficient Balance';
     if (isApprovalNeeded) return 'Approve Required';
+    if (isBelowMarketPrice) return 'Price Below Market';
     return 'Place Order';
   };
 
@@ -663,6 +674,14 @@ const handleCancelOrder = async (orderId) => {
               showIcon
             />
           )}
+          {isBelowMarketPrice && (
+            <Alert
+              className="below-market-price-alert"
+              message="The price you entered is below the current market price."
+              type="warning"
+              showIcon
+            />
+          )}
         </Card>
 
         {/* Estimate Area */}
@@ -704,7 +723,7 @@ const handleCancelOrder = async (orderId) => {
           type="primary" 
           onClick={handlePlaceOrder} 
           icon={!isTransactionInProgress && <SwapOutlined />}
-          disabled={isInsufficientBalance || isTransactionInProgress}
+          disabled={isInsufficientBalance || isTransactionInProgress || isBelowMarketPrice}
         >
           {getButtonText()}
         </Button>
