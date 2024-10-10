@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification  } from 'antd';
+import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification, Alert } from 'antd';
 import { SwapOutlined, LoadingOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { NumericFormat } from 'react-number-format';
@@ -76,6 +76,8 @@ const LimitOrderComponent = () => {
   const [balancesLoading, setBalancesLoading] = useState(false);
   const [isTransactionInProgress, setIsTransactionInProgress] = useState(false);
   
+  const [isSellMaxDigits, setIsSellMaxDigits] = useState(false);
+  const [isBuyMaxDigits, setIsBuyMaxDigits] = useState(false);
 
   // fetch user and token data
   // useEffect(() => {
@@ -492,6 +494,11 @@ const handleCancelOrder = async (orderId) => {
       setEffectAmount(toNatureUnit(buyAmount, buyToken.decimals));
     }
     checkBalance();
+
+    // check max input digital
+    const parts = value.split('.');
+    const integerPart = parts[0].replace(/,/g, '');
+    setIsSellMaxDigits(integerPart.length >= 15);
   };
   
   const handleBuyAmountChange = (values) => {
@@ -502,6 +509,11 @@ const handleCancelOrder = async (orderId) => {
       const newBuyAmount = new BigNumber(value);
       setBuyAmount(toSmallestUnit(newBuyAmount, buyToken.decimals));
     }
+
+    // check max input digital
+    const parts = value.split('.');
+    const integerPart = parts[0].replace(/,/g, '');
+    setIsBuyMaxDigits(integerPart.length >= 15);
   };
 
   // Function to check if a token is disabled
@@ -583,6 +595,14 @@ const handleCancelOrder = async (orderId) => {
             </Text>
             <Button className="balance-max-button" onClick={() => handleMaxClick(sellToken, setSellAmount)} size="small">Max</Button>
           </div>
+          {isSellMaxDigits && (
+            <Alert
+              className="max-digits-alert"
+              message="Maximum number of digits reached"
+              type="warning"
+              showIcon
+            />
+          )}
         </Card>
 
         {/* Switch button */}
@@ -635,6 +655,14 @@ const handleCancelOrder = async (orderId) => {
               )}
             </span>
           </Text>
+          {isBuyMaxDigits && (
+            <Alert
+              className="max-digits-alert"
+              message="Maximum number of digits reached"
+              type="warning"
+              showIcon
+            />
+          )}
         </Card>
 
         {/* Estimate Area */}

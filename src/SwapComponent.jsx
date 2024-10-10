@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Modal, List, Typography, Card, Spin, notification, Tooltip } from 'antd';
+import React, { useState, useEffect, useContext, forwardRef } from 'react';
+import { Button, Input, Modal, List, Typography, Card, Spin, notification, Tooltip, Alert } from 'antd';
 import { SwapOutlined, LoadingOutlined, SearchOutlined , ArrowDownOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { NumericFormat } from 'react-number-format';
@@ -83,6 +83,8 @@ const SwapComponent = () => {
 
   const [hasLiquidity, setHasLiquidity] = useState(true);
   const [isTransactionInProgress, setIsTransactionInProgress] = useState(false);
+
+  const [isMaxDigits, setIsMaxDigits] = useState(false);
 
   const {
     slippage,
@@ -555,6 +557,12 @@ const SwapComponent = () => {
       setEffectAmount(toNatureUnit(buyAmount, buyToken.decimals));
     else
       setBuyAmount(new BigNumber(0));
+
+    // check max input digital
+    const parts = value.split('.');
+    const integerPart = parts[0].replace(/,/g, '');
+    setIsMaxDigits(integerPart.length >= 15);
+
   };
 
   // Function to check if a token is disabled
@@ -600,7 +608,7 @@ const SwapComponent = () => {
               value={sellAmount.isZero() ? '' : toNatureUnit(sellAmount, sellToken.decimals)}
               onValueChange={handleSellAmountChange}
               thousandSeparator={true}
-              decimalScale={sellToken.decimals}
+              decimalScale={18}
               allowNegative={false}
               placeholder="0"
               customInput={Input}
@@ -638,6 +646,14 @@ const SwapComponent = () => {
             </Text>
             <Button className="balance-max-button" onClick={() => handleMaxClick(sellToken, setSellAmount)} size="small">Max</Button>
           </div>
+          {isMaxDigits && (
+              <Alert
+                className="max-digits-alert"
+                message="Maximum number of digits reached"
+                type="warning"
+                showIcon
+              />
+            )}
         </Card>
         {/* Switch button */}
         <Button

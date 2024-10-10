@@ -125,6 +125,12 @@
   box-shadow: none;
 }
 
+.max-digits-alert {
+  margin-top: 8px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
 .estimate-info {
   margin-bottom: 15px;
 }
