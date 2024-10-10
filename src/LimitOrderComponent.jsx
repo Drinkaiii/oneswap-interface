@@ -159,7 +159,7 @@ const LimitOrderComponent = () => {
   }, []);
 
   useEffect(() => {
-    if (estimateAmount.gt(0) && sellAmount.gt(0) && buyAmount.gt(0)) {
+    if (estimateAmount.gt(0) && sellAmount.gt(0)) {
       setIsBelowMarketPrice(buyAmount.lt(estimateAmount));
     } else {
       setIsBelowMarketPrice(false);
