@@ -35,6 +35,23 @@
   color: rgba(0, 0, 0, 0.45);
 }
 
+.token-label-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.fee-info-icon {
+  margin-left: 5px;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: help;
+}
+
+.fee-info-icon:hover {
+  color: var(--green);
+}
+
 .token-input {
   display: flex;
   align-items: center;

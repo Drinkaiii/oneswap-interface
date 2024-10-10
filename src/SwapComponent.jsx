@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, forwardRef } from 'react';
 import { Button, Input, Modal, List, Typography, Card, Spin, notification, Tooltip, Alert } from 'antd';
-import { SwapOutlined, LoadingOutlined, SearchOutlined , ArrowDownOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, SwapOutlined, LoadingOutlined, SearchOutlined , ArrowDownOutlined } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { NumericFormat } from 'react-number-format';
 import { useTokens } from './TokenProvider';
@@ -601,7 +601,12 @@ const SwapComponent = () => {
       <div className="swap-card">
         {/* Sell Token Area */}
         <Card className="token-card sell-token">
-          <Text className="token-label">Sell</Text>
+          <div className="token-label-container">
+            <Text className="token-label">Sell</Text>
+            <Tooltip title="A 0.2% fee will be charged on this transaction by OneSwap">
+              <InfoCircleOutlined className="fee-info-icon" />
+            </Tooltip>
+          </div>
           <div className="token-input">
             <NumericFormat
               className="amount-input"
