@@ -19,7 +19,7 @@ export function toNatureUnit(amount, decimals, displayDecimals) {
     return result.toFixed(displayDecimals);
   }
   
-  return result.toString();
+  return result.toFixed();
 }
 
 // convert to the smallest unit
