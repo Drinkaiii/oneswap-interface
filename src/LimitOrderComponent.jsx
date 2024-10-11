@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Button, Input, Modal, List, Typography, Card, Slider, Spin, notification, Alert } from 'antd';
-import { SwapOutlined, LoadingOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { Button, Modal, List, Typography, Card, Spin, notification, Alert } from 'antd';
+import { SwapOutlined, LoadingOutlined, } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import { NumericFormat } from 'react-number-format';
 import { useTokens } from './TokenProvider';
@@ -8,18 +8,11 @@ import { useWebSocket } from './WebSocketProvider';
 import { WalletContext } from './WalletProvider';
 import BigNumber from 'bignumber.js';
 import LimitOrderHistory  from './LimitOrderHistory';
-import { fetchAccountBalances, fetchTokenIcons, toNormalUnit, toNatureUnit, toSmallestUnit } from './utils';
+import { fetchAccountBalances, toNatureUnit, toSmallestUnit } from './utils';
 import AdvancedSettings, { useAdvancedSettings } from './AdvancedSettings';
 import './LimitOrderComponent.css';
 
 const { Text } = Typography;
-
-// const availableTokens = [
-//     { symbol: 'ETH', code: 'ethereum', decimals: 18, address: "0xa3127E9B960DA8E7b297411728Def559bCaDf9c4" },
-//     { symbol: 'WBTC', code: 'wrapped-bitcoin', decimals: 18, address: "0xdE43B354d506Ce213C4bE70B750b5c6AcC09D7CA"},
-//     { symbol: 'USDT', code: 'tether', decimals: 18, address: "0x9a34950F069fFB4FD58bbE906f0C36A4c51AAf00" },
-//     { symbol: 'ZYDB', code: 'zydb', decimals: 18, address: "0xab0b42Ac6ec6B9B29E55Ba7991887f4C374d2407" }
-//   ];
 
 // Contract and ABI
 const contractAddress = "0x08dfC836a3343618ffB412FFaDF3B882cB98852b"; // New Order Contract
@@ -54,12 +47,9 @@ const LimitOrderComponent = () => {
   const [estimateAmount, setEstimateAmount] = useState(new BigNumber("0"));// default: 0
   const [effectAmount, setEffectAmount] = useState(sellAmount);
 
-  const [slippage, setSlippage] = useState(1); // default: 1%
-  const [minAmountOut, setMinAmountOut] = useState(new BigNumber("0")); // default: 0
-
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSelectingSell, setIsSelectingSell] = useState(true);
-  //const [tokenIcons, setTokenIcons] = useState({});
+
   // State for waiting modal
   const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
 
@@ -80,11 +70,6 @@ const LimitOrderComponent = () => {
   const [isBuyMaxDigits, setIsBuyMaxDigits] = useState(false);
 
   const [isBelowMarketPrice, setIsBelowMarketPrice] = useState(false);
-
-  // fetch user and token data
-  // useEffect(() => {
-  //   fetchTokenIcons(availableTokens, setTokenIcons);
-  // }, []);
 
   // Fetch user's wallet balance from Worker back-end
   useEffect(() => {
@@ -528,8 +513,7 @@ const handleCancelOrder = async (orderId) => {
 
   // Function to check if a token is disabled
   const isTokenDisabled = (token) => {
-    return (isSelectingSell && token.address === buyToken.address) ||
-           (!isSelectingSell && token.address === sellToken.address);
+    return token.address === sellToken.address || token.address === buyToken.address;
   };
 
   const handleMaxClick = (token, callback) => {
@@ -619,7 +603,7 @@ const handleCancelOrder = async (orderId) => {
         {/* Switch button */}
         <Button
           className="switch-tokens-button"
-          icon={<ArrowDownOutlined />}
+          icon={<SwapOutlined rotate={90} />}
           onClick={handleSwapTokens}
         />
 
@@ -722,7 +706,7 @@ const handleCancelOrder = async (orderId) => {
           className="place-order-button ant-btn ant-btn-primary" 
           type="primary" 
           onClick={handlePlaceOrder} 
-          icon={!isTransactionInProgress && <SwapOutlined />}
+          // icon={!isTransactionInProgress && <SwapOutlined />}
           disabled={isInsufficientBalance || isTransactionInProgress || isBelowMarketPrice}
         >
           {getButtonText()}

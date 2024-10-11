@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, Button } from 'antd';
-import { SwapOutlined, DollarOutlined, SafetyOutlined, GithubOutlined, MailOutlined } from '@ant-design/icons';
+import { SwapOutlined, DollarOutlined, SafetyOutlined, GithubOutlined, MailOutlined, XOutlined, DiscordOutlined } from '@ant-design/icons';
 import './LandingPage.css';
 
 const tokens = [
@@ -140,14 +140,14 @@ const LandingPage = () => {
           </div>
           <div className="social-links">
             <a href="https://" target="_blank" rel="noopener noreferrer">
-              <img src="/x.png" alt="Twitter" className="social-icon" />
+              <XOutlined />
               <span>Twitter</span>
             </a>
-            <a href="https://discord.gg/yourserver" target="_blank" rel="noopener noreferrer">
-              <img src="/discord.svg" alt="Discord" className="social-icon" />
+            <a href="https://discord.gg/server" target="_blank" rel="noopener noreferrer">
+              <DiscordOutlined />
               <span>Discord</span>
             </a>
-            <a href="https://github.com/yourorganization" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/organization" target="_blank" rel="noopener noreferrer">
               <GithubOutlined />
               <span>GitHub</span>
             </a>
