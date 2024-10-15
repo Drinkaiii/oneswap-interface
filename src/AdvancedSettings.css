@@ -91,7 +91,7 @@
 }
 
 /* 確保按鈕之間有一些間距 */
-.gas-fee-radio-group .ant-radio-button-wrapper + .ant-radio-button-wrapper {
+.gas-fee-radio-group .ant-radio-button-wrapper {
   margin-left: 8px;
 }
 
@@ -103,6 +103,22 @@
 /* 移除 Ant Design 的默認 focus 樣式 */
 .gas-fee-radio-group .ant-radio-button-wrapper:focus-within {
   outline: none;
+}
+
+@media (max-width: 768px) {
+  .gas-fee-radio-group .ant-radio-button-wrapper {
+    margin-left: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gas-fee-radio-group .ant-radio-button-wrapper {
+    margin-left: 5px;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
 }
 
 .settings-button {
@@ -134,10 +150,6 @@
 
 .ant-input-number-focused {
   box-shadow: 0 0 0 2px rgba(6, 214, 160, 0.2);
-}
-
-.gas-fee-radio-group .ant-radio-button-wrapper {
-  margin-bottom: 8px;
 }
 
 .setting-info-icon {
