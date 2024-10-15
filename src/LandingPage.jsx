@@ -139,19 +139,19 @@ const LandingPage = () => {
             <img src="/community.gif" alt="Join our community" />
           </div>
           <div className="social-links">
-            <a href="https://" target="_blank" rel="noopener noreferrer">
+            <a rel="noopener noreferrer">{/*todo*/}
               <XOutlined />
               <span>Twitter</span>
             </a>
-            <a href="https://discord.gg/server" target="_blank" rel="noopener noreferrer">
+             <a target="_blank" rel="noopener noreferrer">{/*todo*/}
               <DiscordOutlined />
               <span>Discord</span>
             </a>
-            <a href="https://github.com/organization" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/Drinkaiii/oneswap-interface/tree/develop" target="_blank" rel="noopener noreferrer">
               <GithubOutlined />
               <span>GitHub</span>
             </a>
-            <a href="mailto:contact@yourproject.com">
+            <a href="mailto:contact@kai410705@gmail.com">
               <MailOutlined />
               <span>Email</span>
             </a>
