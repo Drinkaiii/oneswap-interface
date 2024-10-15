@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HOST_URL } from './config';
 import { formatTokenAmount } from './utils';
-import { Table, Typography, Spin, Button } from 'antd';
+import { Table, Typography, Spin, Button, Space  } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import BigNumber from 'bignumber.js';
 import './LimitOrderHistory.css';
@@ -78,11 +78,13 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
       title: 'Order ID',
       dataIndex: 'orderId',
       key: 'orderId',
+      responsive: ['md'],
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      responsive: ['md'],
       render: (status) => (
         <Text className={`status-tag status-${status.toLowerCase()}`}>
           {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -158,7 +160,7 @@ const OrderHistory = ({ account, tokenIcons, latestTransaction, cancelledOrders 
               {cancellingOrders[record.orderId] ? (
                 <Spin indicator={<LoadingOutlined style={{ fontSize: 16, color: 'var(--red)', margin: '0 15px' }} spin />} />
               ) : (
-                'Cancel Order'
+                'Cancel'
               )}
             </Button>
           );

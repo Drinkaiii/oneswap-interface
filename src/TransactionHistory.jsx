@@ -43,6 +43,7 @@ const TransactionHistory = ({ tokenIcons, latestTransaction }) => {
       title: 'Transaction',
       dataIndex: 'transactionHash',
       key: 'transactionHash',
+      responsive: ['md'],
       render: (text) => {
         if (!text) return null;
         const shortHash = `0x${text.slice(2, 6)}...${text.slice(-4)}`;
@@ -120,6 +121,7 @@ const TransactionHistory = ({ tokenIcons, latestTransaction }) => {
       title: 'Date',
       dataIndex: 'createdAt',
       key: 'createdAt',
+      responsive: ['lg'],
       render: (createdAt) => (createdAt ? new Date(createdAt).toLocaleString() : null),
     },
   ];

@@ -15,14 +15,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
 }
 
 .swap-card {
   border: 1px solid #d9d9d9;
   border-radius: 8px;
   padding: 20px;
-  width: 480px;
+  margin: 20px;
+  max-width: 480px;
   background-color: #f0f2f5;
 }
 
@@ -65,10 +65,33 @@
   box-shadow: none;
   outline: none;
   background-color: transparent;
-  flex: 1;
   width: 60%;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .token-input {
+    display: flex;
+    align-items: center;
+    width: 550px;
+  }
+  .amount-input,
+  .amount-display {
+    font-size: 28px;
+    width: 70%;
+  }
+}
+
+@media (max-width: 480px) {
+  .token-input {
+    width: 250px;
+  }
+  .amount-input,
+  .amount-display {
+    font-size: 24px;
+    width: 70%;
+  }
 }
 
 .token-select-button {
@@ -95,6 +118,28 @@
 .token-icon {
   width: 30px;
   margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .token-select-button {
+    font-size: 24px;
+    padding: 0 8px;
+  }
+
+  .token-icon {
+    width: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .token-select-button {
+    font-size: 18px;
+    padding: 0 6px;
+  }
+
+  .token-icon {
+    width: 20px;
+  }
 }
 
 .balance-container {

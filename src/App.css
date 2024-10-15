@@ -19,6 +19,8 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 .app {
@@ -29,6 +31,7 @@ body,
 
 .app-main {
   flex-grow: 1;
+  max-width: 100%;
 }
 
 /* Header styles */
@@ -312,4 +315,32 @@ body,
   background-color: var(--blue);
   border-color: var(--blue);
   color: white;
+}
+
+/* 只針對 Drawer 中按鈕的樣式 */
+.drawer-menu-button {
+  background-color: var(--red) !important;
+  border-color: var(--red) !important;
+  color: white !important;
+}
+
+.drawer-menu-button:hover {
+  background-color: var(--red-dark) !important;
+  border-color: var(--red-dark) !important;
+}
+
+/* Menu 自訂樣式 */
+.drawer-menu .ant-menu-item {
+  color: black !important; /* 按鈕字體顏色為黑色 */
+}
+
+.drawer-menu .ant-menu-item:hover,
+.drawer-menu .ant-menu-item-active {
+  background-color: #ff9999 !important; /* 按鈕懸停時顏色變成深紅 */
+  color: white !important; /* 懸停時字體顏色變成白色 */
+}
+
+.drawer-menu .ant-menu-item-selected {
+  background-color: var(--red) !important; /* 選擇時按鈕的背景變成紅色 */
+  color: white !important; /* 選擇時字體顏色變成白色 */
 }

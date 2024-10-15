@@ -16,7 +16,7 @@ const MainContent = () => {
   }, [location.pathname]);
   
   return (
-    <Content style={{ padding: '0 50px', marginTop: 64 }}>
+    <Content>
       <div style={{ background: '#fff', padding: 24, minHeight: 380, display:"flex", justifyContent:"center" }}>
         <AdvancedSettingsProvider>
           <Routes>

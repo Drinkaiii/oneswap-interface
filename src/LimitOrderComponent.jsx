@@ -71,6 +71,9 @@ const LimitOrderComponent = () => {
 
   const [isBelowMarketPrice, setIsBelowMarketPrice] = useState(false);
 
+  // RWD
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 768);
+
   // Fetch user's wallet balance from Worker back-end
   useEffect(() => {
     if (account) {
@@ -150,6 +153,19 @@ const LimitOrderComponent = () => {
       setIsBelowMarketPrice(false);
     }
   }, [estimateAmount, sellAmount, buyAmount]);
+
+  // RWD
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
   
   // send estimate request by WebSocket
   const sendEstimateRequest = () => {
@@ -685,11 +701,11 @@ const handleCancelOrder = async (orderId) => {
                 <img className="token-icon" src={tokenIcons[buyToken.symbol]} alt={buyToken.symbol} />
                 <Text className="token-symbol">{buyToken.symbol}</Text>
               </div>
-              <Text className="separator">/</Text>
-              <div className="token-display">
+              {!isMobileView && <Text className="separator">/</Text>}
+              {!isMobileView && <div className="token-display">
                 <img className="token-icon" src={tokenIcons[sellToken.symbol]} alt={sellToken.symbol} />
                 <Text className="token-symbol">{sellToken.symbol}</Text>
-              </div>
+              </div>}
             </div>
           </div>
         </Card>
@@ -714,7 +730,7 @@ const handleCancelOrder = async (orderId) => {
         <AdvancedSettings showSlippage={false} showDeadline={false}/>
       </div>
       {/* Order History Component */}
-      <div className="order-history-container">
+      {!isMobileView && <div className="order-history-container">
         <LimitOrderHistory 
           account={account} 
           tokenIcons={tokenIcons} 
@@ -722,7 +738,7 @@ const handleCancelOrder = async (orderId) => {
           cancelledOrders={cancelledOrders}
           handleCancelOrder={handleCancelOrder}
         />
-      </div>
+      </div> }
 
       {/* Token Selection Modal */}
       <Modal

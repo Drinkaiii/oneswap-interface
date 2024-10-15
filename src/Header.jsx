@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Layout, Menu, Button, Modal, notification, Space, Typography, Tooltip, Spin } from 'antd';
-import { CopyOutlined, LoadingOutlined, GlobalOutlined } from '@ant-design/icons';
+import { Layout, Menu, Button, Modal, notification, Space, Typography, Tooltip, Spin, Drawer } from 'antd';
+import { CopyOutlined, LoadingOutlined, GlobalOutlined, MenuOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import { WalletContext } from './WalletProvider';
 import { useWebSocket } from './WebSocketProvider';
@@ -21,6 +21,11 @@ const AppHeader = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const walletButtonRef = useRef(null);
   const [isWaitingForTransaction, setIsWaitingForTransaction] = useState(false);
+
+  // RWD
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 768);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  
   
   useEffect(() => {
     setSelectedKey(getSelectedKey(location.pathname));
@@ -59,6 +64,19 @@ const AppHeader = () => {
       setFormattedGasPrice(undefined);
     }
   }, [gasPrice]);
+
+  // RWD
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const menuItems = [
     { key: '1', label: <Link to="/swap">Swap</Link> },
@@ -161,15 +179,40 @@ const AppHeader = () => {
 
   return (
     <Header className="app-header">
-      <Menu 
-        className="app-menu" 
-        theme="dark" 
-        mode="horizontal" 
-        selectedKeys={[selectedKey]}
-        items={menuItems}
-      />
+      {isMobileView ? (
+        <>
+          <Button
+            className="drawer-menu-button"
+            type="primary"
+            icon={<MenuOutlined />}
+            onClick={() => setDrawerVisible(true)}
+          />
+          <Drawer
+            title="OneSwap"
+            placement="left"
+            onClose={() => setDrawerVisible(false)}
+            open={drawerVisible}
+          >
+            <Menu 
+              className="drawer-menu" 
+              mode="vertical" 
+              selectedKeys={[selectedKey]}
+              items={menuItems}
+              onClick={() => setDrawerVisible(false)}
+            />
+          </Drawer>
+        </>
+      ) : (
+        <Menu 
+          className="app-menu" 
+          theme="dark" 
+          mode="horizontal" 
+          selectedKeys={[selectedKey]}
+          items={menuItems}
+        />
+      )}
       <div className="header-right">
-        {formattedGasPrice && (
+        {!isMobileView && formattedGasPrice && (
           <div className="gas-price">
             <span className={`gas-price-indicator ${gasPriceColor}`}></span>
             <span className="gas-price-text">{formattedGasPrice} Gwei</span>

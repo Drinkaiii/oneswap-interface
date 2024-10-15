@@ -74,6 +74,9 @@ const SwapComponent = () => {
 
   const [isMaxDigits, setIsMaxDigits] = useState(false);
 
+  // RWD
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 768);
+
   const {
     slippage,
     deadlineMinutes,
@@ -180,6 +183,19 @@ const SwapComponent = () => {
   useEffect(() => {
     resetEstimateResponse();
     setBuyAmount(new BigNumber(0));
+  }, []);
+
+  // RWD
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // check balance
@@ -672,7 +688,7 @@ const SwapComponent = () => {
                   : "No liquidity for this token pair."}
               </Text>
               {estimateResponse.data.length > 1 && (
-                <Tooltip title="View Other Exchange Rates">
+                <Tooltip title={isMobileView?"":"View Other Exchange Rates"}>
                   <Button
                     className="exchange-rate-icon-button"
                     onClick={showExchangeRateModal}
@@ -700,9 +716,9 @@ const SwapComponent = () => {
       </div>
       
       {/* show transaction history */}
-      <div className="transaction-history-container">
+      {!isMobileView && <div className="transaction-history-container">
         <TransactionHistory account={account} tokenIcons={tokenIcons} latestTransaction={latestTransaction} />
-      </div>
+      </div> }
 
       {/* Token Selection Modal */}
       <Modal
