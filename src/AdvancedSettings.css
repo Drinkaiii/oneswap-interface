@@ -5,6 +5,11 @@
   /* padding: 10px 0; */
 }
 
+.limit-order-container .ant-collapse {
+  margin-top: 10px;
+  /* padding: 10px 0; */
+}
+
 .ant-collapse-ghost > .ant-collapse-item > .ant-collapse-header {
   color: var(--green);
   transition: all 0.3s ease;
