@@ -309,6 +309,7 @@ const SwapComponent = () => {
     if (data.type === 'estimate' && data.status === 'success' && data.data.length !== 0) {
       const estimateResponse = data.data[selectedExchangeIndex];
       const decimalsOut = estimateResponse.liquidity.decimals1; //doto
+      setEffectAmount(toNatureUnit(buyAmount, buyToken.decimals));
       setBuyAmount(new BigNumber(estimateResponse.amountOut));
     } else {
       console.error('無法獲取估算結果:', data);
