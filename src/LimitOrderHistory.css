@@ -1,0 +1,81 @@
+:root {
+  --red: #ef476f;
+  --red-dark: #d13d63;
+  --yellow: #ffd166;
+  --yellow-dark: #ffc233;
+  --green: #06d6a0;
+  --green-dark: #05b185;
+  --blue: #118ab2;
+  --blue-dark: #0e7494;
+  --dark-blue: #073b4c;
+  --dark-blue-darker: #052e3b;
+}
+
+/* 修改表格行懸停時的背景色 */
+.ant-table-tbody > tr:hover > td {
+  background-color: rgba(6, 214, 160, 0.05) !important;
+}
+
+/* 修改排序箭頭的顏色 */
+.ant-table-column-sorter-up.active,
+.ant-table-column-sorter-down.active {
+  color: var(--green) !important;
+}
+
+/* 修改分頁號碼的顏色 */
+.ant-pagination-item:hover,
+.ant-pagination-item-active {
+  border-color: var(--green) !important;
+}
+
+.ant-pagination-item-active a {
+  color: var(--green) !important;
+}
+
+.ant-pagination-item:hover a,
+.ant-pagination-next:hover .ant-pagination-item-link,
+.ant-pagination-prev:hover .ant-pagination-item-link {
+  color: var(--green) !important;
+}
+
+/* 修改分頁器箭頭的顏色 */
+.ant-pagination-prev:focus .ant-pagination-item-link,
+.ant-pagination-next:focus .ant-pagination-item-link,
+.ant-pagination-prev:hover .ant-pagination-item-link,
+.ant-pagination-next:hover .ant-pagination-item-link {
+  color: var(--green) !important;
+  border-color: var(--green) !important;
+}
+
+.status-tag {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-filled {
+  color: var(--green) !important;
+}
+
+.status-canceled {
+  color: var(--red) !important;
+}
+
+.status-unfilled {
+  color: var(--yellow-dark) !important;
+}
+
+.history-cancel-order-button {
+  border-color: var(--red) !important;
+  color: var(--red) !important;
+}
+
+.history-cancel-order-button:hover {
+  border-color: var(--red-dark) !important;
+}
+
+.history-cancel-order-button:active {
+  border-color: var(--red-dark) !important;
+  opacity: 0.8;
+}

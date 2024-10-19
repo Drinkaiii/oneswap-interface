@@ -1,0 +1,346 @@
+:root {
+  --red: #ef476f;
+  --red-dark: #d13d63;
+  --yellow: #ffd166;
+  --yellow-dark: #ffc233;
+  --green: #06d6a0;
+  --green-dark: #05b185;
+  --blue: #118ab2;
+  --blue-dark: #0e7494;
+  --dark-blue: #073b4c;
+  --dark-blue-darker: #052e3b;
+}
+
+/* Global styles */
+html,
+body,
+#root,
+.app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-main {
+  flex-grow: 1;
+  max-width: 100%;
+}
+
+/* Header styles */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: var(--dark-blue-darker);
+  color: white;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Menu styles */
+.app-menu {
+  flex-grow: 1;
+}
+
+.app-menu.ant-menu-dark {
+  background-color: var(--dark-blue-darker);
+}
+
+.app-menu.ant-menu-dark .ant-menu-item-selected {
+  background-color: var(--red) !important;
+}
+
+.app-menu.ant-menu-dark .ant-menu-item:hover,
+.app-menu.ant-menu-dark .ant-menu-item-active,
+.app-menu.ant-menu-dark .ant-menu-submenu-active,
+.app-menu.ant-menu-dark .ant-menu-submenu-open,
+.app-menu.ant-menu-dark .ant-menu-submenu-selected,
+.app-menu.ant-menu-dark .ant-menu-submenu-title:hover {
+  background-color: var(--red-dark) !important;
+}
+
+.app-menu.ant-menu-dark .ant-menu-item a {
+  color: white;
+}
+
+.app-menu.ant-menu-dark .ant-menu-item-selected a,
+.app-menu.ant-menu-dark .ant-menu-item:hover a {
+  color: white !important;
+}
+
+/* Gas price styles */
+.gas-price {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.gas-price-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.gas-price-indicator.green {
+  background-color: var(--green);
+}
+
+.gas-price-indicator.yellow {
+  background-color: var(--yellow);
+}
+
+.gas-price-indicator.red {
+  background-color: var(--red);
+}
+
+.gas-price-text {
+  color: white;
+  font-weight: bold;
+}
+
+/* Wallet connect styles */
+.wallet-connect {
+  display: flex;
+  align-items: center;
+}
+
+.wallet-address {
+  color: white;
+  margin-right: 16px;
+}
+
+.connect-button.ant-btn,
+.connect-button.ant-btn-primary {
+  background-color: var(--red);
+  border-color: var(--red);
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.connect-button.ant-btn:hover,
+.connect-button.ant-btn-primary:hover,
+.connect-button.ant-btn:focus,
+.connect-button.ant-btn-primary:focus {
+  background-color: var(--red-dark) !important;
+  border-color: var(--red-dark) !important;
+  color: white !important;
+}
+
+.disconnect-button.ant-btn {
+  background-color: transparent;
+  border-color: var(--red);
+  color: var(--red);
+  margin-left: 16px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.disconnect-button.ant-btn:hover,
+.disconnect-button.ant-btn:focus {
+  background-color: var(--red);
+  color: white;
+}
+
+.wallet-address-button.ant-btn {
+  background-color: var(--dark-blue-darker);
+  border-color: var(--red);
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.wallet-address-button.ant-btn:hover {
+  background-color: var(--red-dark) !important;
+  border-color: var(--red-dark) !important;
+  color: white !important;
+}
+
+/* waiting style */
+
+.waiting-close-button {
+  color: var(--green-dark);
+  background-color: rgba(6, 214, 160, 0.1);
+  font-weight: bold;
+  width: 80%;
+  height: 50px;
+  transition: all 0.1s ease;
+}
+
+.waiting-close-button:hover {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.waiting-close-buttonn:active {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Footer styles */
+.app-footer {
+  text-align: center;
+  padding: 20px 0;
+  background-color: var(--dark-blue-darker);
+  color: white;
+}
+
+.footer-text {
+  margin: 0;
+}
+
+.wallet-address-button.ant-btn,
+.connect-button.ant-btn {
+  display: flex;
+  align-items: center;
+  background-color: var(--dark-blue-darker);
+  border-color: var(--red);
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.wallet-address-button.ant-btn .metamask-logo,
+.connect-button.ant-btn .metamask-logo {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
+.wallet-address-button.ant-btn:hover,
+.connect-button.ant-btn:hover {
+  background-color: var(--red-dark);
+  border-color: var(--red-dark);
+  color: white;
+}
+
+.wallet-address-button.ant-btn:focus,
+.connect-button.ant-btn:focus {
+  background-color: var(--dark-blue-darker);
+  border-color: var(--red);
+  color: white;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(239, 71, 111, 0.2);
+}
+
+.wallet-address-button.ant-btn:hover:focus,
+.connect-button.ant-btn:hover:focus {
+  background-color: var(--red-dark);
+  border-color: var(--red-dark);
+  color: white;
+}
+
+/* ... account information Modal ... */
+
+.switch-wallet-button.ant-btn {
+  background-color: var(--green);
+  border-color: var(--green);
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.switch-wallet-button.ant-btn:hover,
+.switch-wallet-button.ant-btn:focus {
+  background-color: var(--green-dark) !important;
+  border-color: var(--green-dark) !important;
+  color: white !important;
+}
+
+.disconnect-wallet-button.ant-btn {
+  background-color: var(--red);
+  border-color: var(--red);
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.disconnect-wallet-button.ant-btn:hover,
+.disconnect-wallet-button.ant-btn:focus {
+  background-color: var(--red-dark) !important;
+  border-color: var(--red-dark) !important;
+  color: white !important;
+}
+
+/* Wallet Modal styles */
+.wallet-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.wallet-info {
+  margin-bottom: 24px;
+}
+
+.wallet-address {
+  word-break: break-all;
+  color: var(--dark-blue-darker);
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.copy-button {
+  padding: 4px 8px;
+  margin-left: 8px;
+}
+
+.etherscan-button.ant-btn {
+  background-color: var(--blue);
+  border-color: var(--blue);
+  color: white;
+}
+
+/* 只針對 Drawer 中按鈕的樣式 */
+.drawer-menu-button {
+  background-color: var(--red) !important;
+  border-color: var(--red) !important;
+  color: white !important;
+}
+
+.drawer-menu-button:hover {
+  background-color: var(--red-dark) !important;
+  border-color: var(--red-dark) !important;
+}
+
+/* Menu 自訂樣式 */
+.drawer-menu .ant-menu-item {
+  color: black !important; /* 按鈕字體顏色為黑色 */
+}
+
+.drawer-menu .ant-menu-item:hover,
+.drawer-menu .ant-menu-item-active {
+  background-color: #ff9999 !important; /* 按鈕懸停時顏色變成深紅 */
+  color: white !important; /* 懸停時字體顏色變成白色 */
+}
+
+.drawer-menu .ant-menu-item-selected {
+  background-color: var(--red) !important; /* 選擇時按鈕的背景變成紅色 */
+  color: white !important; /* 選擇時字體顏色變成白色 */
+}
