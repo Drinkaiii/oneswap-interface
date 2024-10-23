@@ -81,12 +81,14 @@ const AppHeader = () => {
   const menuItems = [
     { key: '1', label: <Link to="/swap">Swap</Link> },
     { key: '2', label: <Link to="/limit">Limit</Link> },
+    { key: '3', label: <Link to="/readMe">ReadMe</Link> },
   ];
 
   // for select key initialization
   function getSelectedKey(pathname){
     if (pathname.includes('/swap')) return '1';
     if (pathname.includes('/limit')) return '2';
+    if (pathname.includes('/readMe')) return '3';
     return '1'; // default is Swap page
   };
 

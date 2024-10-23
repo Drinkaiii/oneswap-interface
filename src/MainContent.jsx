@@ -3,6 +3,7 @@ import { Layout } from 'antd';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Swap from './SwapComponent';
 import LimitOrder from './LimitOrderComponent';
+import ReadMe from './ReadMeComponent';
 import Setting from './SettingComponent';
 import { AdvancedSettingsProvider } from './AdvancedSettings';
 
@@ -23,7 +24,7 @@ const MainContent = () => {
             <Route path="/" element={<Navigate to="/swap" />} />
             <Route path="/swap" element={<Swap />} />
             <Route path="/limit" element={<LimitOrder />} />
-            <Route path="/settings" element={<Setting />} />
+            <Route path="/readme" element={<ReadMe />} />
             <Route path="*" element={<div>Page not found</div>} />
           </Routes>
         </AdvancedSettingsProvider>
