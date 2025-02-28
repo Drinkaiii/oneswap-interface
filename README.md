@@ -7,6 +7,8 @@ website：https://oneswap.biz/
 - Front-end：https://github.com/Drinkaiii/oneswap-interface (本頁面)
 - Worker Back-end：https://github.com/Drinkaiii/oneswap-worker
 - Core Back-end： https://github.com/Drinkaiii/oneswap-core
+- address (DexAggregator)：0x635D90a6D17d228423385518Ce597300C4fE0260
+- address (LimitOrder)：0x08dfC836a3343618ffB412FFaDF3B882cB98852b
 
 ## 測試用錢包帳號使用教學
 
